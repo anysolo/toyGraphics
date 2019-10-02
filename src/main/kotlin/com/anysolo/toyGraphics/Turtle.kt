@@ -14,19 +14,21 @@ class Turtle(window: Window) {
   private var angle: Double = 0.0
 
   private var position = Point(
-        (window.width.toDouble() / 2).roundToInt(),
-        (window.height.toDouble() / 2).roundToInt()
+    (window.width.toDouble() / 2).roundToInt(),
+    (window.height.toDouble() / 2).roundToInt()
   )
 
   private var penIsDown = true
   private val gc = Graphics(window)
 
   fun forward(distance: Int) {
-    val radianAngle = Math.toRadians(angle)
+    var radianAngle = Math.toRadians(angle) + Math.PI
+    if(radianAngle > 2*Math.PI)
+      radianAngle -= 2*Math.PI
 
     val newPos = Point(
-          (position.x + Math.sin(radianAngle) * distance).roundToInt(),
-          (position.y + Math.cos(radianAngle) * distance).roundToInt()
+      (position.x + Math.sin(radianAngle) * distance).roundToInt(),
+      (position.y + Math.cos(radianAngle) * distance).roundToInt()
     )
 
     if(penIsDown)
@@ -37,8 +39,8 @@ class Turtle(window: Window) {
 
   fun backward(distance: Int) = forward(-distance)
 
-  fun turnRight(angle: Double)  { this.angle += angle % 360 }
-  fun turnLeft(angle: Double)   { this.angle -= angle % 360 }
+  fun turnLeft(angle: Double)  { this.angle += angle % 360 }
+  fun turnRight(angle: Double) { this.angle -= angle % 360 }
 
   /** Lift the pen up. Turtle is going to move without drawing */
   fun penUp()   { penIsDown = false }
