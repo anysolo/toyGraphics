@@ -1,10 +1,11 @@
 package com.anysolo.toyGraphics
 
 import java.awt.*
-import javax.swing.JFrame
-import javax.swing.SwingUtilities
 
 import com.anysolo.toyGraphics.internals.GraphicPane
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
+import kotlin.system.exitProcess
 
 
 /**
@@ -41,20 +42,28 @@ open class Window(
      * */
     val autoSync: Boolean = !buffered
 ) {
-    private val jframe = JFrame()
-    internal lateinit var pane: GraphicPane
+    private val frame = Frame()
+    internal val pane: GraphicPane
 
     init {
-        jframe.defaultCloseOperation = JFrame.EXIT_ON_CLOSE
-        jframe.isUndecorated = true
-        jframe.isResizable = false
-        jframe.size = Dimension(width, height)
+        val size = Dimension(width, height)
 
-        SwingUtilities.invokeAndWait {
-            pane = GraphicPane(jframe, background, buffered=buffered)
-        }
+        frame.isUndecorated = true
+        frame.isResizable = false
+        frame.size = size
 
-        jframe.repaint()
+        frame.addWindowListener(object : WindowAdapter() {
+            override fun windowClosing(windowEvent: WindowEvent?) {
+                exitProcess(0)
+            }
+        })
+
+        pane = GraphicPane(background, buffered=buffered)
+        pane.size = size
+
+        frame.add(pane)
+        frame.repaint()
+        frame.isVisible = true
 
         while (!pane.ignoreRepaint) {
             sleep(1)
@@ -79,6 +88,6 @@ open class Window(
      * If you did not close the window you program will be running until you close the window from OS or stop you program.
      */
     fun close() {
-        jframe.dispose()
+        frame.dispose()
     }
 }

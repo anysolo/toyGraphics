@@ -1,4 +1,4 @@
-package com.anysolo.toyGraphics.demo.turtle
+package com.anysolo.toyGraphics.samples.turtle
 
 import com.anysolo.toyGraphics.*
 
