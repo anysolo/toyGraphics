@@ -10,16 +10,24 @@ import kotlin.math.roundToInt
  * It draws on the window while it moving. You also can lift the turtle's pen up and
  * move without drawing.
  * */
-class Turtle(window: Window) {
+class Turtle(val window: Window) {
   private var angle: Double = 0.0
 
-  private var position = Point(
-    (window.width.toDouble() / 2).roundToInt(),
-    (window.height.toDouble() / 2).roundToInt()
-  )
+  private var position = Point(0, 0)
 
   private var penIsDown = true
   private val gc = Graphics(window)
+
+  init {
+      home()
+  }
+
+  fun home() {
+    position = Point(
+      (window.width.toDouble() / 2).roundToInt(),
+      (window.height.toDouble() / 2).roundToInt()
+    )
+  }
 
   fun forward(distance: Int) {
     var radianAngle = Math.toRadians(angle) + Math.PI
