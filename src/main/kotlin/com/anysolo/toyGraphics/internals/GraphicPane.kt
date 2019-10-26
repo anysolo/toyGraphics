@@ -5,12 +5,9 @@ import java.awt.*
 import com.anysolo.toyGraphics.Color
 
 
-internal class GraphicPane(background: Color, buffered: Boolean): Canvas() {
+internal class GraphicPane(background: Color): Canvas() {
     init {
         this.background = background.jdkColor
-
-        if(buffered)
-            createBufferStrategy(1)
 
         isFocusable = true
         focusTraversalKeysEnabled = false

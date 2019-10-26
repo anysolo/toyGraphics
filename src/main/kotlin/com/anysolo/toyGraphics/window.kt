@@ -58,7 +58,7 @@ open class Window(
             }
         })
 
-        pane = GraphicPane(background, buffered=buffered)
+        pane = GraphicPane(background)
         pane.size = size
 
         frame.add(pane)
@@ -68,6 +68,9 @@ open class Window(
         while (!pane.ignoreRepaint) {
             sleep(1)
         }
+
+        if(buffered)
+            pane.createBufferStrategy(2)
     }
 
     /**
