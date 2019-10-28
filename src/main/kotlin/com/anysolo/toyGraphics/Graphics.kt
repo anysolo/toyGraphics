@@ -128,11 +128,6 @@ class Graphics(val window: Window): Closeable {
      * amount of time passed since the last frame from this image was drawn.
      *  */
     fun drawImage(x: Int, y: Int, image: Image) {
-        jdkGc.drawImage(image.jdkImage.image, x, y, null)
-        window.doAutoSync()
-    }
-
-    fun drawImage(x: Int, y: Int, image: Image2) {
         jdkGc.drawImage(image.jdkImage, x, y, null)
         window.doAutoSync()
     }

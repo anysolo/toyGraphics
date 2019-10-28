@@ -157,12 +157,13 @@ fun main() {
 
     val keyboard = Keyboard(wnd)
 
-    val imageSet= ImageSet.loadFromAnimatedGif("graphicsFiles/zombie.gif")
-    val animation = Animation(imageSet, imageSet.frames.indices.toList(), 100)
-    val aniPlayer = AnimationPlayer(animation)
+    val zombieImageSet = ImageSet.loadFromAnimatedGif("graphicsFiles/zombie.gif")
+    val zombieAnimation = Animation(zombieImageSet, zombieImageSet.frames.indices.toList(), 100)
+    val zombieAnimationPlayer = AnimationPlayer(zombieAnimation)
 
-    val zombieImage = Image("graphicsFiles/zombie.gif")
-    val blastImage = Image("graphicsFiles/blast.gif")
+    val blastImageSet = ImageSet.loadFromAnimatedGif("graphicsFiles/blast.gif")
+    val blastAnimation = Animation(blastImageSet, blastImageSet.frames.indices.toList(), 100)
+    val blastAnimationPlayer = AnimationPlayer(blastAnimation)
 
     turnTheGun(0.0)
 
@@ -201,9 +202,9 @@ fun main() {
 
             if (blastCount != 0) {
                 gc.drawImage(
-                        (projectileDistance - blastImage.width / 2).roundToInt(),
-                        (gameAreaHeight - 1 - blastAltitude - blastImage.height / 2).roundToInt(),
-                        blastImage
+                        (projectileDistance - blastImageSet.width / 2).roundToInt(),
+                        (gameAreaHeight - 1 - blastAltitude - blastImageSet.height / 2).roundToInt(),
+                        blastAnimationPlayer.currentFrameImage
                 )
 
                 blastCount--
@@ -214,18 +215,10 @@ fun main() {
 
             if (zombieDistance != 0.0) {
                 gc.drawImage(
-                        (zombieDistance - zombieImage.width / 2).roundToInt(),
-                        gameAreaHeight - zombieImage.height - 1,
-                        aniPlayer.currentFrameImage
+                        (zombieDistance - zombieImageSet.width / 2).roundToInt(),
+                        gameAreaHeight - zombieImageSet.height - 1,
+                        zombieAnimationPlayer.currentFrameImage
                 )
-
-                /*
-                gc.drawImage(
-                        (zombieDistance - zombieImage.width / 2).roundToInt(),
-                        gameAreaHeight - zombieImage.height - 1,
-                        zombieImage
-                )
-                 */
 
                 if (!zombieIsDying) {
                     calculateZombie()
