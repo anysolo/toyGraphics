@@ -159,11 +159,9 @@ fun main() {
 
     val zombieImageSet = ImageSet.loadFromAnimatedGif("graphicsFiles/zombie.gif")
     val zombieAnimation = Animation(zombieImageSet, zombieImageSet.frames.indices.toList(), 100)
-    val zombieAnimationPlayer = AnimationPlayer(zombieAnimation)
 
     val blastImageSet = ImageSet.loadFromAnimatedGif("graphicsFiles/blast.gif")
     val blastAnimation = Animation(blastImageSet, blastImageSet.frames.indices.toList(), 100)
-    val blastAnimationPlayer = AnimationPlayer(blastAnimation)
 
     turnTheGun(0.0)
 
@@ -201,10 +199,10 @@ fun main() {
             drawGun(gc)
 
             if (blastCount != 0) {
-                gc.drawImage(
+                gc.drawAnimation(
                         (projectileDistance - blastImageSet.width / 2).roundToInt(),
                         (gameAreaHeight - 1 - blastAltitude - blastImageSet.height / 2).roundToInt(),
-                        blastAnimationPlayer.currentFrameImage
+                        blastAnimation
                 )
 
                 blastCount--
@@ -214,10 +212,10 @@ fun main() {
             }
 
             if (zombieDistance != 0.0) {
-                gc.drawImage(
+                gc.drawAnimation(
                         (zombieDistance - zombieImageSet.width / 2).roundToInt(),
                         gameAreaHeight - zombieImageSet.height - 1,
-                        zombieAnimationPlayer.currentFrameImage
+                        zombieAnimation
                 )
 
                 if (!zombieIsDying) {
