@@ -24,12 +24,23 @@ class Image internal constructor(internal val jdkImage: BufferedImage) {
         get() = jdkImage.height
 }
 
-object ImageUtils {
+internal object ImageUtils {
     private fun getReaderForFile(filename: String): ImageReader {
-        val stream = ImageIO.createImageInputStream(File(filename))
+        val file = File(filename)
+
+        if(!file.exists())
+            throw ImageFileError(filename, "File does not exists")
+
+        if(!file.isFile)
+            throw ImageFileError(filename, "Should a normal file, not a directory or something else.")
+
+        if(!file.canRead())
+            throw ImageFileError(filename, "Cannot read the file. Check file permissions.")
+
+        val stream = ImageIO.createImageInputStream(file)
         val readers = ImageIO.getImageReaders(stream)
         if (!readers.hasNext())
-            throw LoadImageError("no image reader found");
+            throw ImageFileError(filename, "No image reader found.")
 
         val reader = readers.next() as ImageReader
         reader.input = stream
@@ -48,35 +59,17 @@ object ImageUtils {
 fun Image(filename: String): Image {
     val images = ImageUtils.readImagesFromFile(filename)
     if(images.size != 1)
-        throw LoadImageError("filename: $filename contains more than one image.")
+        throw ImageFileError(
+            filename,
+            "File contains more than one image. " +
+                    "Use Animation or AnimationFrames classes to open animated gif."
+        )
 
     return images.first()
 }
 
-
-class ImageSet(val frames: List<Image>) {
-    val width: Int
-    val height: Int
-
-    val numberOfImages: Int
-        get() = frames.size
-
-    init {
-        if(frames.isEmpty())
-            throw LoadImageError("ImageSet must contain at least one frame")
-
-        width = frames.first().width
-        height = frames.first().height
-    }
-
-    companion object {
-        fun loadFromAnimatedGif(filename: String): ImageSet {
-            val images = ImageUtils.readImagesFromFile(filename)
-            return ImageSet(images)
-        }
-    }
-}
+open class ImageError(message: String): ToyGraphicsError(message)
 
 
-class LoadImageError(val filename: String):
-        ToyGraphicsError("Cannot load image file $filename")
+class ImageFileError(val filename: String, message: String):
+    ImageError("Image error with file: $filename: $message")

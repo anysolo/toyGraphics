@@ -6,11 +6,10 @@ import com.anysolo.toyGraphics.*
 fun main() {
     val wnd = Window(800, 200, buffered = true)
 
-    val imageSet = ImageSet.loadFromAnimatedGif("graphicsFiles/zombie.gif")
-    val animation = Animation(imageSet, autoStart = true, loop = true)
+    val animation = Animation("graphicsFiles/zombie.gif", delay = 100, autoStart = true, loop = true)
 
     var x = wnd.width - 100
-    val y = wnd.height - imageSet.height
+    val y = wnd.height - animation.height
 
     while(x > 0) {
         Graphics(wnd).use { gc ->
@@ -18,9 +17,9 @@ fun main() {
             gc.drawAnimation(x, y, animation)
         }
 
-        x -= 2
+        x --
 
-        sleep(50)
+        sleep(10)
         AnimationManager.update()
     }
 }
