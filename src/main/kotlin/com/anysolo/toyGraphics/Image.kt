@@ -58,6 +58,9 @@ class ImageSet(val frames: List<Image>) {
     val width: Int
     val height: Int
 
+    val numberOfImages: Int
+        get() = frames.size
+
     init {
         if(frames.isEmpty())
             throw LoadImageError("ImageSet must contain at least one frame")
