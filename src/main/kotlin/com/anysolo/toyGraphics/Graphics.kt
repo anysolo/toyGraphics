@@ -132,6 +132,11 @@ class Graphics(val window: Window): Closeable {
         window.doAutoSync()
     }
 
+    fun drawImage(x: Int, y: Int, image: Image2) {
+        jdkGc.drawImage(image.jdkImage, x, y, null)
+        window.doAutoSync()
+    }
+
     /**
      * Draws oval inside invisible rect.
      */

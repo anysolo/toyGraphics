@@ -157,6 +157,10 @@ fun main() {
 
     val keyboard = Keyboard(wnd)
 
+    val imageSet= ImageSet.loadFromAnimatedGif("graphicsFiles/zombie.gif")
+    val animation = Animation(imageSet, (0 until imageSet.frames.size).toList(), 100)
+    val aniPlayer = AnimationPlayer(animation)
+
     val zombieImage = Image("graphicsFiles/zombie.gif")
     val blastImage = Image("graphicsFiles/blast.gif")
 
@@ -212,8 +216,16 @@ fun main() {
                 gc.drawImage(
                         (zombieDistance - zombieImage.width / 2).roundToInt(),
                         gameAreaHeight - zombieImage.height - 1,
+                        aniPlayer.currentFrameImage
+                )
+
+                /*
+                gc.drawImage(
+                        (zombieDistance - zombieImage.width / 2).roundToInt(),
+                        gameAreaHeight - zombieImage.height - 1,
                         zombieImage
                 )
+                 */
 
                 if (!zombieIsDying) {
                     calculateZombie()
@@ -228,5 +240,6 @@ fun main() {
         score += timeStep / 100
 
         sleep(loopSleep)
+        AnimationManager.update()
     }
 }
