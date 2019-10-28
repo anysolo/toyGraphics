@@ -158,7 +158,7 @@ fun main() {
     val keyboard = Keyboard(wnd)
 
     val imageSet= ImageSet.loadFromAnimatedGif("graphicsFiles/zombie.gif")
-    val animation = Animation(imageSet, (0 until imageSet.frames.size).toList(), 100)
+    val animation = Animation(imageSet, imageSet.frames.indices.toList(), 100)
     val aniPlayer = AnimationPlayer(animation)
 
     val zombieImage = Image("graphicsFiles/zombie.gif")
