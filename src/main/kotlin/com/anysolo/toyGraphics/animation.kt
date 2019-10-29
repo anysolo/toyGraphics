@@ -2,7 +2,11 @@ package com.anysolo.toyGraphics
 
 import java.time.Instant
 
-
+/**
+ * A set of animation frames.
+ *
+ * You can load animation frames into this object from a animated GIF file.
+ */
 class AnimationFrames(val frames: List<Image>) {
     val width: Int
     val height: Int
@@ -10,6 +14,7 @@ class AnimationFrames(val frames: List<Image>) {
     val numberOfFrames: Int
         get() = frames.size
 
+    /** Load frames from animated gif file.*/
     constructor(filename: String): this(ImageUtils.readImagesFromFile(filename))
 
     init {
@@ -28,46 +33,77 @@ class AnimationFrames(val frames: List<Image>) {
     }
 }
 
-
+/**
+ * The animation is a set of pictures (frames) showing in a sequence.
+ *
+ * You can create an animation object from an animated GIF file or AnimationFrames object.
+ * Using AnimationFrames allows you to create multiple animations using only one set of frames,
+ * which preserves memory.
+ *
+ * To use animation, you draw it using method "drawAnimation" of Graphics class.
+ * Each call of this method chooses the appropriate frame to draw,
+ * depending on the time and frame delay you set.
+ *
+ * "Delay" is how long, in milliseconds, you want one frame to be on the screen.
+ * By default, an animation is stopped after you create it, and you have to start it manually.
+ * It also does not repeat.
+ *
+ * You can pass autoStart=true when you create an Animation object to make it start automatically.
+ * If you pass loop=true it is going to restart from the first frame after the last one.
+ *
+ * @constructor Create an animation using existing [frames] object.
+ * @param [frames] The existing AnimationFrames object used a base for this animation
+ * @param [activeFrames] A list of frames you want to use in your animation.
+ * You specify active frames by their numbers in the original set frames
+ * (AnimationFrames or animated gif file). First frame is 0. If you pass null all the frame will be used.
+ * @param [delay] How long you want to see one frame on the screen, in milliseconds.
+ * @param [autoStart] Do you want to start the animation automatically when it created?
+ * @param [loop] Do you want the animation to play in a loop?
+ */
 class Animation(
     val frames: AnimationFrames,
-    usedFrames: List<Int>?,
+    activeFrames: List<Int>? = null,
     val delay: Int = defaultFrameDelay,
     autoStart: Boolean = false,
     loop: Boolean = false
 ) {
-    val usedFrames: List<Int> = usedFrames ?: (0 until frames.numberOfFrames).toList()
+    val activeFrames: List<Int> = activeFrames ?: (0 until frames.numberOfFrames).toList()
     private var currentFrameIndex: Int = 0
     private var lastFrameTime: Long = 0
     var isPlaying: Boolean = autoStart
     var isLoop: Boolean = loop
 
-    constructor(
-        frames: AnimationFrames,
-        delay: Int = defaultFrameDelay,
-        autoStart: Boolean = false,
-        loop: Boolean = false
-    ): this(frames, null, delay, autoStart, loop)
-
+    /** Create animation from an animated GIF file using all its frame in the same order.
+     *
+     * @param [filename] name of the animated GIF file.
+     * @param [activeFrames] A list of frames you want to use in your animation. You specify active frames by their numbers
+     * in the original set frames (AnimationFrames or animated gif file). First frame is 0. If you pass null all the frame will be used.
+     * @param [delay] How long you want to see one frame on the screen, in milliseconds.
+     * @param [autoStart] Do you want to start the animation automatically when it created?
+     * @param [loop] Do you want the animation to play in a loop?
+     */
     constructor(
         filename: String,
+        activeFrames: List<Int>? = null,
         delay: Int = defaultFrameDelay,
         autoStart: Boolean = false,
         loop: Boolean = false
-    ): this(AnimationFrames(filename), null, delay, autoStart, loop)
+    ): this(AnimationFrames(filename), activeFrames, delay, autoStart, loop)
 
+    /** Start switching frames from the first frame. */
     fun start() {
         isPlaying = true
         currentFrameIndex = 0
     }
 
+    /** Stop switching frames. */
     fun stop() {
         isPlaying = false
         currentFrameIndex = 0
     }
 
     val numberOfFrames: Int
-        get() = usedFrames.size
+        get() = activeFrames.size
 
     val height: Int
         get() = frames.height
@@ -75,17 +111,18 @@ class Animation(
     val width: Int
         get() = frames.width
 
-    private fun getFrameImage(frameNum: Int): Image = frames.frames[usedFrames[frameNum]]
+    private fun getFrameImage(frameNum: Int): Image = frames.frames[activeFrames[frameNum]]
 
     init {
         AnimationManager.add(this)
     }
 
     companion object {
+        /** This frame delay will be used if you do not specify delay or pass null */
         const val defaultFrameDelay = 100
     }
 
-    fun update(now: Long) {
+    internal fun update(now: Long) {
         if(now - lastFrameTime >= delay) {
             lastFrameTime = now
 
@@ -103,12 +140,17 @@ class Animation(
         get() = getFrameImage(currentFrameIndex)
 }
 
-
+/** AnimationManager switches frames in all animations when you call its update method. */
 object AnimationManager {
     private val animations = mutableListOf<Animation> ()
 
     internal fun add(player: Animation) = animations.add(player)
 
+    /** Goes through all animations and switch frames if needed.
+     *
+     * You must call this method between drawing frames. Usually the best moment to call it
+     * right after sleep an the end of the game loop.
+     */
     fun update() {
         val time = Instant.now()
 
@@ -118,7 +160,10 @@ object AnimationManager {
     }
 }
 
-
+/** Draws current frame from animation.
+ *
+ * If animation is stopped this method will be always drawing the same frame.
+ * */
 fun Graphics.drawAnimation(x: Int, y: Int, animation: Animation) {
     drawImage(x, y, animation.currentFrameImage)
 }
