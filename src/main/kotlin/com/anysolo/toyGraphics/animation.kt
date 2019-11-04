@@ -26,6 +26,9 @@ class AnimationFrames(val frames: List<Image>) {
     }
 
     companion object {
+    /** Load frames from the animated GIF file.
+     * @param [filename] name of the animated GIF file.
+     * */
         fun loadFromAnimatedGif(filename: String): AnimationFrames {
             val images = ImageUtils.readImagesFromFile(filename)
             return AnimationFrames(images)
@@ -72,23 +75,6 @@ class Animation(
     private var lastFrameTime: Long = 0
     var isPlaying: Boolean = autoStart
     var isLoop: Boolean = loop
-
-    /** Create animation from an animated GIF file using all its frame in the same order.
-     *
-     * @param [filename] name of the animated GIF file.
-     * @param [activeFrames] A list of frames you want to use in your animation. You specify active frames by their numbers
-     * in the original set frames (AnimationFrames or animated gif file). First frame is 0. If you pass null all the frame will be used.
-     * @param [delay] How long you want to see one frame on the screen, in milliseconds.
-     * @param [autoStart] Do you want to start the animation automatically when it created?
-     * @param [loop] Do you want the animation to play in a loop?
-     */
-    constructor(
-        filename: String,
-        activeFrames: List<Int>? = null,
-        delay: Int = defaultFrameDelay,
-        autoStart: Boolean = false,
-        loop: Boolean = false
-    ): this(AnimationFrames(filename), activeFrames, delay, autoStart, loop)
 
     /** Start switching frames from the first frame. */
     fun start() {
