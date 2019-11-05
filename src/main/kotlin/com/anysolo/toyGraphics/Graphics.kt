@@ -143,4 +143,8 @@ class Graphics(val window: Window): Closeable {
 
         window.doAutoSync()
     }
+
+    fun rotate(angle: Double) {
+        jdkGc.rotate(angle)
+    }
 }
