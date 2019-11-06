@@ -2,6 +2,7 @@ package com.anysolo.toyGraphics
 
 import java.awt.BasicStroke
 import java.awt.Graphics2D
+import java.awt.geom.AffineTransform
 import java.io.Closeable
 
 
@@ -129,6 +130,23 @@ class Graphics(val window: Window): Closeable {
      *  */
     fun drawImage(x: Int, y: Int, image: Image) {
         jdkGc.drawImage(image.jdkImage, x, y, null)
+        window.doAutoSync()
+    }
+
+    fun drawImage(x: Int, y: Int, image: Image, angle: Double, centered: Boolean = false) {
+        val transform = AffineTransform()
+
+        var tx = x
+        var ty = y
+
+        if(centered) {
+            tx =
+        }
+
+        transform.setToTranslation(x.toDouble(), y.toDouble())
+        transform.rotate(angle)
+
+        jdkGc.drawImage(image.jdkImage, transform, null)
         window.doAutoSync()
     }
 

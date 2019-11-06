@@ -11,8 +11,7 @@ fun main() {
     while(true) {
         Graphics(wnd).use {g ->
             g.clear()
-            g.rotate(Math.toRadians(angle))
-            g.drawImage(wnd.width/2, wnd.height/2, image)
+            g.drawImage(wnd.width/2, wnd.height/2, image, Math.toRadians(angle))
             angle += 1.0
             sleep(20)
         }
