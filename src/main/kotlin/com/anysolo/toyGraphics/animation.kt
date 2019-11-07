@@ -153,3 +153,12 @@ object AnimationManager {
 fun Graphics.drawAnimation(x: Int, y: Int, animation: Animation) {
     drawImage(x, y, animation.currentFrameImage)
 }
+
+/**
+ * Draw rotated animation.
+ *
+ * If animation is stopped this method will be always drawing the same frame.
+ **/
+fun Graphics.drawAnimation(x: Int, y: Int, animation: Animation, angle: Double, anchorx: Int = 0, anchory: Int = 0) {
+    drawImage(x, y, animation.currentFrameImage, angle, anchorx, anchory)
+}

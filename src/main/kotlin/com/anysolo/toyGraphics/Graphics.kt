@@ -4,6 +4,7 @@ import java.awt.BasicStroke
 import java.awt.Graphics2D
 import java.awt.geom.AffineTransform
 import java.io.Closeable
+import java.security.cert.TrustAnchor
 
 
 /** Use this class to draw on a window.
@@ -56,7 +57,7 @@ class Graphics(val window: Window): Closeable {
 
         jdkGc.dispose()
         window.sync()
-  }
+    }
 
     /** Fills the window with background color */
     fun clear() {
@@ -124,27 +125,21 @@ class Graphics(val window: Window): Closeable {
      * Draw an image.
      *
      * Recommended file formats: PNG, GIF and JPEG.
-     *
-     * If the image is animated, drawImage draws one frame of it. The frame will be chosen depending on
-     * amount of time passed since the last frame from this image was drawn.
-     *  */
+     **/
     fun drawImage(x: Int, y: Int, image: Image) {
         jdkGc.drawImage(image.jdkImage, x, y, null)
         window.doAutoSync()
     }
 
-    fun drawImage(x: Int, y: Int, image: Image, angle: Double, centered: Boolean = false) {
+    /**
+     * Draw rotated image.
+     *
+     * Recommended file formats: PNG, GIF and JPEG.
+     **/
+    fun drawImage(x: Int, y: Int, image: Image, angle: Double, anchorx: Int = 0, anchory: Int = 0) {
         val transform = AffineTransform()
-
-        var tx = x
-        var ty = y
-
-        if(centered) {
-            tx =
-        }
-
         transform.setToTranslation(x.toDouble(), y.toDouble())
-        transform.rotate(angle)
+        transform.rotate(angle, (anchorx - x).toDouble(), (anchory - y).toDouble())
 
         jdkGc.drawImage(image.jdkImage, transform, null)
         window.doAutoSync()
