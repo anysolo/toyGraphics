@@ -110,9 +110,9 @@ class Graphics(val window: Window): Closeable {
         drawRect(r.point.x, r.point.y, r.size.width, r.size.height, fill)
 
     /**
-     * Draw the text.
+     * Draws the text.
      *
-     * Draw the text starting from x, y
+     * Draws the text starting from x, y
      */
     fun drawText(x: Int, y: Int, string: String) {
         jdkGc.drawString(string, x, y)
@@ -122,7 +122,7 @@ class Graphics(val window: Window): Closeable {
     fun drawText(p: Point, string: String) = drawText(p.x, p.y, string)
 
     /**
-     * Draw an image.
+     * Draws an image.
      *
      * Recommended file formats: PNG, GIF and JPEG.
      **/
@@ -132,8 +132,12 @@ class Graphics(val window: Window): Closeable {
     }
 
     /**
-     * Draw rotated image.
+     * Draws rotated image.
      *
+     * Draws an image rotated on [angle] measured in radians. angle=Math.PI will be a half of the full circle.
+     * The image rotates coordinates around an anchor point. You can set the anchor point using
+     * [anchorx] and [anchory]. By default the anchor point is 0,0, meaning the image rotates around its top left
+     * corner.
      * Recommended file formats: PNG, GIF and JPEG.
      **/
     fun drawImage(x: Int, y: Int, image: Image, angle: Double, anchorx: Int = 0, anchory: Int = 0) {

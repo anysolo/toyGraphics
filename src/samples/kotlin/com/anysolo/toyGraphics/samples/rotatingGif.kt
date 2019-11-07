@@ -10,6 +10,7 @@ fun main() {
     val x = wnd.width/2 - image.width/2
     val y = wnd.height/2 - image.height/2
 
+    val maxAngle = Math.PI*2
     var angle = 0.0
 
     while(true) {
@@ -19,9 +20,12 @@ fun main() {
             val anchorx = x + image.width/2
             val anchory = y + image.height/2
 
-            g.drawImage(x, y, image, Math.toRadians(angle), anchorx, anchory)
+            g.drawImage(x, y, image, angle, anchorx, anchory)
 
-            angle += 1.0
+            angle += maxAngle/360
+            if(angle > maxAngle)
+                angle = 0.0
+
             sleep(20)
         }
     }

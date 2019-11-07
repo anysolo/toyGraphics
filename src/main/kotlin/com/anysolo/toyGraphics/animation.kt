@@ -155,9 +155,12 @@ fun Graphics.drawAnimation(x: Int, y: Int, animation: Animation) {
 }
 
 /**
- * Draw rotated animation.
+ * Draws rotated animation.
  *
- * If animation is stopped this method will be always drawing the same frame.
+ * Draws an animation rotated on [angle] measured in radians. angle=Math.PI will be a half of the full circle.
+ * The animation rotates coordinates around an anchor point. You can set the anchor point using
+ * [anchorx] and [anchory]. By default the anchor point is 0,0, meaning the animation rotates around its top left
+ * corner.
  **/
 fun Graphics.drawAnimation(x: Int, y: Int, animation: Animation, angle: Double, anchorx: Int = 0, anchory: Int = 0) {
     drawImage(x, y, animation.currentFrameImage, angle, anchorx, anchory)
