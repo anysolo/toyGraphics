@@ -5,8 +5,8 @@ import java.time.Instant
 /**
  * A set of animation frames.
  *
- * You can load animation frames into this object from a sprite sheet image or an animated GIF.
- * Sprite sheet is an image file containing many frames in one image, like a 2D matrix.
+ * You can load frames from a sprite sheet image or an animated GIF.
+ * Sprite sheet image must be file containing many frames in one image, like a 2D matrix.
  */
 class SpriteSheet(val frames: List<Image>) {
     val width: Int

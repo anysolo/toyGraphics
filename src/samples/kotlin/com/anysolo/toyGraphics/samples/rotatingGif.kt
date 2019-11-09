@@ -4,7 +4,7 @@ import com.anysolo.toyGraphics.*
 
 
 fun main() {
-    val wnd = Window(800, 600, background = Pal16.black, buffered = true)
+    val wnd = Window(300, 300, background = Pal16.black, buffered = true)
     val image = Image("graphicsFiles/ufo-small.png")
 
     val x = wnd.width/2 - image.width/2
