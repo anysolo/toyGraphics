@@ -54,6 +54,26 @@ internal object ImageUtils {
 
         return (0 until numberOfImages) . map { Image(reader.read(it)) }
     }
+
+    internal fun loadImageSheet(filename: String, columns: Int, rows: Int): List<Image> {
+        val imageSheet = Image(filename)
+        val imageHeight = imageSheet.height / rows
+        val imageWidth = imageSheet.width / columns
+
+        val images = mutableListOf<Image>()
+
+        for(row in 0 until rows) {
+            val y = row * imageHeight
+
+            for(column in 0 until  columns) {
+                val x = column * imageWidth
+
+                images.add(Image(imageSheet.jdkImage.getSubimage(x, y, imageWidth, imageHeight)))
+            }
+        }
+
+        return images
+    }
 }
 
 fun Image(filename: String): Image {
