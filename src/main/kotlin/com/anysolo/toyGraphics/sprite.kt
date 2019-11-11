@@ -1,5 +1,6 @@
 package com.anysolo.toyGraphics
 
+import com.sun.org.apache.xpath.internal.operations.Bool
 import java.time.Instant
 
 /**
@@ -8,7 +9,7 @@ import java.time.Instant
  * You can load frames from a sprite sheet image or an animated GIF.
  * Sprite sheet image must be file containing many frames in one image, like a 2D matrix.
  */
-class SpriteSheet(val frames: List<Image>) {
+class AnimationFrameSheet(val frames: List<Image>) {
     val width: Int
     val height: Int
 
@@ -23,117 +24,119 @@ class SpriteSheet(val frames: List<Image>) {
         height = frames.first().height
     }
 
+    fun getFrame(index: Int) = frames[index]
+
     companion object {
     /** Load frames from the an animated GIF file.
      * @param [filename] name of the animated GIF file.
      * */
-        fun loadFromAnimatedGif(filename: String): SpriteSheet {
+        fun loadFromAnimatedGif(filename: String): AnimationFrameSheet {
             val images = ImageUtils.readImagesFromFile(filename)
-            return SpriteSheet(images)
+            return AnimationFrameSheet(images)
         }
 
-        fun loadFromImageSheet(filename: String, columns: Int, rows: Int): SpriteSheet {
+        fun loadFromImageSheet(filename: String, columns: Int, rows: Int): AnimationFrameSheet {
             val images = ImageUtils.loadImageSheet(filename, columns, rows)
-            return SpriteSheet(images)
+            return AnimationFrameSheet(images)
         }
     }
 }
 
 /**
- * A sprite is a set of pictures (frames) showing in a sequence.
+ * A sprite is a set of pictures (frameNumbers) showing in a sequence.
  *
- * You can create an animation object from an animated GIF file or AnimationFrames object.
- * Using AnimationFrames allows you to create multiple animations using only one set of frames,
- * which preserves memory.
+ * You can create a sprite from a [frameSheet].
+ * One sprite sheet can be used to create as many spites as you want. Each sprite cab use it own subset of frame
+ * in its own order.
  *
- * To use animation, you draw it using method "drawAnimation" of Graphics class.
+ * To use sprite, you draw it using method "drawSprite" of Graphics class.
  * Each call of this method chooses the appropriate frame to draw,
  * depending on the time and frame delay you set.
  *
  * "Delay" is how long, in milliseconds, you want one frame to be on the screen.
- * By default, an animation is stopped after you create it, and you have to start it manually.
+ * By default, an animation is stopped after you create the sprite, and you have to start it manually.
  * It also does not repeat.
  *
- * You can pass autoStart=true when you create an Animation object to make it start automatically.
  * If you pass loop=true it is going to restart from the first frame after the last one.
  *
- * @constructor Create an animation using existing [spriteSheet] object.
- * @param [spriteSheet] The existing AnimationFrames object used a base for this animation
- * @param [frames] A list of frames you want to use in your animation.
- * You specify active frames by their numbers in the original set frames
- * (AnimationFrames or animated gif file). First frame is 0. If you pass null all the frame will be used.
+ * @constructor Create a sprite using existing [frameSheet] object.
+ * @param [frameSheet] The sprite sheet used in this sprite.
+ * @param [frameNumbers] A list of frameNumbers you want to use in your animation.
+ * You specify frameNumbers by their numbers in sprite sheet.
+ * First frame is 0. If you pass null all the frameNumbers will be used in original order.
  * @param [delay] How long you want to see one frame on the screen, in milliseconds.
- * @param [autoStart] Do you want to start the animation automatically when it created?
- * @param [loop] Do you want the animation to play in a loop?
+ * @param [loop] Do you want the animation of the sprite to play in a loop?
  */
-class Sprite(
-    val spriteSheet: SpriteSheet,
-    frames: List<Int>? = null,
-    val delay: Int = defaultFrameDelay,
-    autoStart: Boolean = false,
-    loop: Boolean = false
+class Animation(
+        var manager: AnimationManager?,
+        val frameSheet: AnimationFrameSheet,
+        frameNumbers: List<Int>? = null,
+        val delay: Int = defaultFrameDelay,
+        val loop: Boolean = false
 ) {
-    val frames: List<Int> = frames ?: (0 until spriteSheet.numberOfFrames).toList()
-    private var currentFrameIndex: Int = 0
-    private var lastFrameTime: Long = 0
-    var isPlaying: Boolean = autoStart
-    var isLoop: Boolean = loop
-
-    /** Start switching frames from the first frame. */
-    fun start() {
-        isPlaying = true
-        currentFrameIndex = 0
+    init {
+        manager?.add(this)
     }
 
-    /** Stop switching frames. */
-    fun stop() {
-        isPlaying = false
-        currentFrameIndex = 0
-    }
+    val frameNumbers: List<Int> = frameNumbers ?: (0 until frameSheet.numberOfFrames).toList()
 
     val numberOfFrames: Int
-        get() = frames.size
+        get() = frameNumbers.size
 
     val height: Int
-        get() = spriteSheet.height
+        get() = frameSheet.height
 
     val width: Int
-        get() = spriteSheet.width
+        get() = frameSheet.width
 
-    private fun getFrameImage(frameNum: Int): Image = spriteSheet.frames[frames[frameNum]]
+    val isPlaying: Boolean
+        get() = manager != null
 
-    init {
-        AnimationManager.add(this)
-    }
+//    private fun getFrameImage(frameNum: Int): Image = spriteSheet.frameNumbers[frameNumbers[frameNum]]
 
     companion object {
         /** This frame delay will be used if you do not specify delay or pass null */
         const val defaultFrameDelay = 100
     }
 
-    internal fun update(now: Long) {
-        if(now - lastFrameTime >= delay) {
-            lastFrameTime = now
+    fun start(manager: AnimationManager) {
+        if(this.manager != null)
+            stop()
 
-            currentFrameIndex++
-            if(currentFrameIndex == numberOfFrames) {
-                if(isLoop)
-                    currentFrameIndex = 0
-                else
-                    stop()
-            }
+        this.manager = manager
+        manager.add(this)
+    }
+
+    fun stop() {
+        manager?.let {
+            it.remove(this)
+            manager = null
         }
     }
 
-    internal val currentFrameImage: Image
-        get() = getFrameImage(currentFrameIndex)
+    internal val currentFrameImage: Image?
+        get() {
+            val frameNumber = manager?.getCurrentFrameNumber(this)
+            return if(frameNumber != null)frameSheet.getFrame(frameNumber) else null
+        }
 }
 
-/** AnimationManager switches frames in all animations when you call its update method. */
-object AnimationManager {
-    private val animations = mutableListOf<Sprite> ()
+/** Sprite manager switches frames in all sprites when you call its update method. */
+internal data class SpriteData(var currentFrameIndex: Int, var lastFrameTime: Long)
 
-    internal fun add(player: Sprite) = animations.add(player)
+class AnimationManager {
+    private val sprites = mutableMapOf<Animation, SpriteData> ()
+
+    internal fun add(sprite: Animation) {
+        sprites[sprite] = SpriteData(currentFrameIndex = 0, lastFrameTime = 0)
+    }
+
+    internal fun remove(animation: Animation) {
+        sprites.remove(animation)
+    }
+
+    internal fun getCurrentFrameNumber(animation: Animation): Int? =
+        sprites[animation]?.currentFrameIndex
 
     /** Goes through all animations and switch frames if needed.
      *
@@ -141,20 +144,42 @@ object AnimationManager {
      * right after sleep an the end of the game loop.
      */
     fun update() {
-        val time = Instant.now()
+        val currentTime = Instant.now().toEpochMilli()
 
-        animations.filter {it.isPlaying} . forEach {
-            it.update(time.toEpochMilli())
+        val forRemoval = mutableListOf<Animation>()
+
+        sprites.forEach { sprite, spriteData ->
+            if(updateSprite(sprite, spriteData, currentTime))
+                forRemoval.add(sprite)
         }
+
+        forRemoval.forEach { sprites.remove(it) }
+    }
+
+    private fun updateSprite(animation: Animation, data: SpriteData, currentTime: Long): Boolean {
+        if(currentTime - data.lastFrameTime >= animation.delay) {
+            data.lastFrameTime = currentTime
+
+            data.currentFrameIndex++
+            if(data.currentFrameIndex == animation.numberOfFrames) {
+                if(animation.loop)
+                    data.currentFrameIndex = 0
+                else
+                    return true
+            }
+        }
+
+        return false
     }
 }
+
 
 /** Draws current frame from animation.
  *
  * If animation is stopped this method will be always drawing the same frame.
  * */
-fun Graphics.drawAnimation(x: Int, y: Int, sprite: Sprite) {
-    drawImage(x, y, sprite.currentFrameImage)
+fun Graphics.drawAnimation(x: Int, y: Int, animation: Animation) {
+    animation.currentFrameImage?.let { drawImage(x, y, it) }
 }
 
 /**
@@ -165,6 +190,6 @@ fun Graphics.drawAnimation(x: Int, y: Int, sprite: Sprite) {
  * [anchorx] and [anchory]. By default the anchor point is 0,0, meaning the animation rotates around its top left
  * corner.
  **/
-fun Graphics.drawAnimation(x: Int, y: Int, sprite: Sprite, angle: Double, anchorx: Int = 0, anchory: Int = 0) {
-    drawImage(x, y, sprite.currentFrameImage, angle, anchorx, anchory)
+fun Graphics.drawAnimation(x: Int, y: Int, animation: Animation, angle: Double, anchorx: Int = 0, anchory: Int = 0) {
+    animation.currentFrameImage?.let { drawImage(x, y, it, angle, anchorx, anchory) }
 }

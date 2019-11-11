@@ -6,24 +6,36 @@ import com.anysolo.toyGraphics.*
 fun main() {
     val wnd = Window(800, 100, buffered = true, background = Pal16.black)
 
-    val spriteSheet = SpriteSheet.loadFromImageSheet("graphicsFiles/jampman.png", 4, 3)
-    val spriteRunningLeft = Sprite(spriteSheet, frames = listOf(0, 1), delay = 100, autoStart = true, loop = true)
-    val spriteRunningRight = Sprite(spriteSheet, frames = listOf(4, 5), delay = 100, autoStart = true, loop = true)
-    val spriteJumping = Sprite(spriteSheet, frames = (8..11).toList(), delay = 100, autoStart = true, loop = true)
+    val spriteSheet = AnimationFrameSheet.loadFromImageSheet("graphicsFiles/jumpman.png", 4, 3)
+    val animationManager = AnimationManager()
+    val spriteRunningLeft = Animation(null, spriteSheet, frameNumbers = listOf(0, 1), delay = 100, loop = true)
+    val spriteRunningRight = Animation(null, spriteSheet, frameNumbers = listOf(4, 5), delay = 100, loop = true)
+    val spriteJumping = Animation(null, spriteSheet, frameNumbers = (8..11).toList(), delay = 100, loop = true)
+    val spriteStanding = Animation(null, spriteSheet, frameNumbers = listOf(8), delay = 100, loop = true)
 
     var x = wnd.width/2
     val y = wnd.height - spriteSheet.height-2
-    var currentSprite: Sprite = spriteJumping
+    var currentSprite: Animation = spriteStanding
 
     val keyboard = Keyboard(wnd)
 
     while(true) {
         val key = keyboard.getPressedKey()
+
         if(key != null) {
+            var newAnimation: Animation? = null
+
             when(key.code) {
-                KeyCodes.LEFT -> currentSprite = spriteRunningLeft
-                KeyCodes.RIGHT -> currentSprite = spriteRunningRight
-                KeyCodes.SPACE -> currentSprite = spriteJumping
+                KeyCodes.LEFT -> newAnimation = spriteRunningLeft
+                KeyCodes.RIGHT -> newAnimation = spriteRunningRight
+                KeyCodes.SPACE -> newAnimation = spriteJumping
+                KeyCodes.ENTER -> newAnimation = spriteStanding
+            }
+
+            if(newAnimation != null) {
+                currentSprite.stop()
+                currentSprite.start(animationManager)
+                currentSprite = newAnimation
             }
         }
 
@@ -39,6 +51,6 @@ fun main() {
         }
 
         sleep(20)
-        AnimationManager.update()
+        animationManager.update()
     }
 }

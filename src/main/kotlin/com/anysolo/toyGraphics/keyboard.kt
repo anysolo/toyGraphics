@@ -74,6 +74,7 @@ object KeyCodes {
     val UP = KeyEvent.VK_UP
     val DOWN = KeyEvent.VK_DOWN
 
+    val ENTER = KeyEvent.VK_ENTER
     val HOME = KeyEvent.VK_HOME
     val END = KeyEvent.VK_END
     val INSERT = KeyEvent.VK_INSERT
