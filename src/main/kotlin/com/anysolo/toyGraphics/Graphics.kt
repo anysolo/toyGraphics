@@ -17,11 +17,10 @@ class Graphics(val window: Window): Closeable {
 
     /** Color of the pen. */
     var color: Color = Color(jdkGc.color)
-
-    set(value) {
-        field = value
-        jdkGc.color = color.jdkColor
-    }
+        set(value) {
+            field = value
+            jdkGc.color = color.jdkColor
+        }
 
     /** Background color. */
     var backgroundColor: Color = Color(jdkGc.background)
@@ -82,15 +81,11 @@ class Graphics(val window: Window): Closeable {
         window.doAutoSync()
     }
 
-    fun drawDot(p: Point) = drawDot(p.x, p.y)
-
     /** Draws line from x1,y1 to x2,y2. */
     fun drawLine(x1: Int, y1: Int, x2: Int, y2: Int) {
         jdkGc.drawLine(x1, y1, x2, y2)
         window.doAutoSync()
     }
-
-    fun drawLine(p1: Point, p2: Point) = drawLine(p1.x, p1.y, p2.x, p2.y)
 
     /**
      * Draws a rect.
@@ -106,9 +101,6 @@ class Graphics(val window: Window): Closeable {
         window.doAutoSync()
     }
 
-    fun drawRect(r: Rect, fill: Boolean = false) =
-        drawRect(r.point.x, r.point.y, r.size.width, r.size.height, fill)
-
     /**
      * Draws the text.
      *
@@ -118,8 +110,6 @@ class Graphics(val window: Window): Closeable {
         jdkGc.drawString(string, x, y)
         window.doAutoSync()
     }
-
-    fun drawText(p: Point, string: String) = drawText(p.x, p.y, string)
 
     /**
      * Draws an image.
@@ -159,9 +149,5 @@ class Graphics(val window: Window): Closeable {
             jdkGc.drawOval(x, y, width, height)
 
         window.doAutoSync()
-    }
-
-    fun rotate(angle: Double) {
-        jdkGc.rotate(angle)
     }
 }
