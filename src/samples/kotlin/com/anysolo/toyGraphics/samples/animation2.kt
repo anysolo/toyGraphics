@@ -15,7 +15,9 @@ fun main() {
 
     var x = wnd.width/2
     val y = wnd.height - spriteSheet.height-2
+
     var currentSprite: Animation = spriteStanding
+    currentSprite.start(animationManager)
 
     val keyboard = Keyboard(wnd)
 
