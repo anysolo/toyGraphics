@@ -7,8 +7,9 @@ fun main() {
     val wnd = Window(800, 200, buffered = true)
 
     val animationManager = AnimationManager()
-    val animationFrames = AnimationFrameSheet.loadFromAnimatedGif("graphicsFiles/zombie.gif")
-    val animation = Animation(animationManager, animationFrames, delay = 100, loop = true)
+    val animationFrames = AnimationFrames.loadFromAnimatedGif("graphicsFiles/zombie.gif")
+    val animation = Animation(animationFrames, delay = 100, loop = true)
+    animation.start(animationManager)
 
     var x = wnd.width - 100
     val y = wnd.height - animation.height
