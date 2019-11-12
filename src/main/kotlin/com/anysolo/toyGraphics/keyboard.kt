@@ -7,30 +7,6 @@ import java.awt.event.KeyListener
 private val modifierCodes = listOf(KeyEvent.VK_SHIFT, KeyEvent.VK_ALT, KeyEvent.VK_CONTROL, KeyEvent.VK_META)
 
 
-internal class KeyEventAdapter(private val onKeyFunc: (Key, pressed: Boolean) -> Unit): KeyListener {
-    override fun keyTyped(e: KeyEvent?) {}
-
-    override fun keyPressed(e: KeyEvent) {
-        val keyCode = e.keyCode
-
-        if(!isModifierCode(keyCode))
-            onKeyFunc(makeKey(e), true)
-    }
-
-    override fun keyReleased(e: KeyEvent) {
-        val keyCode = e.keyCode
-
-        if(!isModifierCode(keyCode))
-            onKeyFunc(makeKey(e), false)
-    }
-
-    private fun isModifierCode(code: Int) = modifierCodes.contains(code)
-
-    private fun makeKey(e: KeyEvent) = Key(
-        e.keyCode, KeyModifiers(e.isShiftDown, e.isAltDown, e.isControlDown, e.isMetaDown)
-    )
-}
-
 
 data class KeyModifiers(
     val shift: Boolean = false, val alt: Boolean = false,
@@ -40,18 +16,18 @@ data class KeyModifiers(
 
 /** Contains information about one pressed key */
 class Key(
-        /**
-         * Integer code of the key.
-         *
-         * Each key on the keyboard can be identified by a unique Int code.
-         * Key code does not change when you press modifiers keys like shift, control, alt and so on.
-         */
-        val code: Int,
+    /**
+     * Integer code of the key.
+     *
+     * Each key on the keyboard can be identified by a unique Int code.
+     * Key code does not change when you press modifiers keys like shift, control, alt and so on.
+     */
+    val code: Int,
 
-        /**
-         * Modifiers pressed at the same moment the key was pressed
-         */
-        val modifiers: KeyModifiers = KeyModifiers()
+    /**
+     * Modifiers pressed at the same moment the key was pressed
+     */
+    val modifiers: KeyModifiers = KeyModifiers()
 ) {
     override fun toString() = "code: $code $modifiers"
 
@@ -103,14 +79,73 @@ object KeyCodes {
 }
 
 
-/** Use this class to work with keyboard */
-class Keyboard(val window: Window) {
-    private var _keys = ArrayList<Key>()
+data class KeyboardEvent(val code: Int, val isPressed: Boolean)
 
-    private val keyEventAdapter = KeyEventAdapter { key, pressed ->
-        if(pressed)
-            _keys.add(key)
+
+/** Use this class to work with keyboard */
+class Keyboard(val window: Window, eventMode: Boolean = false) {
+    internal class KeyAdapter(private val onKeyFunc: (Key, pressed: Boolean) -> Unit): KeyListener {
+        override fun keyTyped(e: KeyEvent?) {}
+
+        override fun keyPressed(e: KeyEvent) {
+            val keyCode = e.keyCode
+
+            if(!isModifierCode(keyCode))
+                onKeyFunc(makeKey(e), true)
+        }
+
+        override fun keyReleased(e: KeyEvent) {
+            val keyCode = e.keyCode
+
+            if(!isModifierCode(keyCode))
+                onKeyFunc(makeKey(e), false)
+        }
+
+        private fun isModifierCode(code: Int) = modifierCodes.contains(code)
+
+        private fun makeKey(e: KeyEvent) = Key(
+            e.keyCode, KeyModifiers(e.isShiftDown, e.isAltDown, e.isControlDown, e.isMetaDown)
+        )
     }
+
+    internal inner class KeyboardEventAdapter: KeyListener {
+        override fun keyTyped(e: KeyEvent?) {}
+
+        override fun keyPressed(e: KeyEvent) {
+            val keyCode = e.keyCode
+
+            _events.add()
+            if(!isModifierCode(keyCode))
+                onKeyFunc(makeKey(e), true)
+        }
+
+        override fun keyReleased(e: KeyEvent) {
+            val keyCode = e.keyCode
+
+            if(!isModifierCode(keyCode))
+                onKeyFunc(makeKey(e), false)
+        }
+
+        private fun isModifierCode(code: Int) = modifierCodes.contains(code)
+
+        private fun makeKey(e: KeyEvent) = Key(
+                e.keyCode, KeyModifiers(e.isShiftDown, e.isAltDown, e.isControlDown, e.isMetaDown)
+        )
+    }
+
+    private var _keys = ArrayList<Key>()
+    private var _events = ArrayList<KeyboardEvent>()
+
+    private val keyEventAdapter = if(eventMode)
+            KeyAdapter { key, pressed ->
+                if(pressed)
+                    _keys.add(key)
+            }
+        else
+            KeyAdapter { key, pressed ->
+                if(pressed)
+                    _keys.add(key)
+            }
 
     init {
         window.pane.addKeyListener(keyEventAdapter)

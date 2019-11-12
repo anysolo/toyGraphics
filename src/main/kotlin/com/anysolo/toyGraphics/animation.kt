@@ -100,6 +100,7 @@ class Animation(
         const val defaultFrameDelay = 100
     }
 
+    /** Start the animation in given animation manager */
     fun start(manager: AnimationManager) {
         if(this.manager != null)
             stop()
@@ -108,10 +109,26 @@ class Animation(
         manager.add(this)
     }
 
+    /** Stop the animation.
+     *
+     * If you draw a stopped animation you drawAnimation call just ignored.
+     * Stopped animation is not linked to any animation manager.
+     * */
     fun stop() {
         manager?.let {
             it.remove(this)
             manager = null
+        }
+    }
+
+    /** Restart animation
+     *
+     * It restart animation from the beginning using the same animation manager.
+     */
+    fun restart() {
+        manager?.let {
+            it.remove(this)
+            it.add(this)
         }
     }
 
@@ -126,6 +143,13 @@ class Animation(
 /** Sprite manager switches frames in all sprites when you call its update method. */
 internal data class SpriteData(var currentFrameIndex: Int, var lastFrameTime: Long)
 
+
+/**
+ * Animation manager is what makes animation alive.
+ *
+ * To start an animation you should pass an animation manager as an argument.
+ * You also must call update() method of AnimationManager at the end of each game loop.
+ */
 class AnimationManager {
     private val sprites = mutableMapOf<Animation, SpriteData> ()
 
