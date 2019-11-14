@@ -78,30 +78,44 @@ object KeyCodes {
     val TAB = KeyEvent.VK_TAB
 }
 
-
+/**
+ * Keyboard event.
+ *
+ * Contains information about what key was pressed or released.
+ * Treat modifier keys (Ctrl, Shift, Alt and so on) as normal keys.
+ * If isPressed == true then the key was pressed otherwise released.
+ */
 data class KeyboardEvent(val code: Int, val isPressed: Boolean)
 
 
-/** Use this class to work with keyboard */
+/** Use this class to work with keyboard
+ *
+ * You can work with keyboard in two modes. If [eventMode] == false
+ * the keyboard will be collection Key objects. You should receive these object
+ * calling getPressedKey() method.
+ * This mode is easier but you cannot detect
+ * when a key was released. Also Ctrl, Alt, Shift, Meta keys will be treated as modifiers
+ * for normal keys. For instance, you cannot detect when Ctrl was pressed.
+ *
+ * If [eventMode] == true the keyboard will be collecting KeyboardEvent objects. You should
+ * get those objects calling getEvent() method.
+ * In this mode modifier keys will be treated as normal keys. You also will receive event for both
+ * pressed and released keys.
+ * */
 class Keyboard(val window: Window, eventMode: Boolean = false) {
-    internal class KeyAdapter(private val onKeyFunc: (Key, pressed: Boolean) -> Unit): KeyListener {
+    internal inner class KeyAdapter: KeyListener {
         override fun keyTyped(e: KeyEvent?) {}
 
         override fun keyPressed(e: KeyEvent) {
             val keyCode = e.keyCode
 
             if(!isModifierCode(keyCode))
-                onKeyFunc(makeKey(e), true)
+                _keys.add(makeKey(e))
         }
 
-        override fun keyReleased(e: KeyEvent) {
-            val keyCode = e.keyCode
+        override fun keyReleased(e: KeyEvent) {}
 
-            if(!isModifierCode(keyCode))
-                onKeyFunc(makeKey(e), false)
-        }
-
-        private fun isModifierCode(code: Int) = modifierCodes.contains(code)
+        private fun isModifierCode(code: Int) = code in modifierCodes
 
         private fun makeKey(e: KeyEvent) = Key(
             e.keyCode, KeyModifiers(e.isShiftDown, e.isAltDown, e.isControlDown, e.isMetaDown)
@@ -112,40 +126,18 @@ class Keyboard(val window: Window, eventMode: Boolean = false) {
         override fun keyTyped(e: KeyEvent?) {}
 
         override fun keyPressed(e: KeyEvent) {
-            val keyCode = e.keyCode
-
-            _events.add()
-            if(!isModifierCode(keyCode))
-                onKeyFunc(makeKey(e), true)
+            _events.add(KeyboardEvent(e.keyCode, true))
         }
 
         override fun keyReleased(e: KeyEvent) {
-            val keyCode = e.keyCode
-
-            if(!isModifierCode(keyCode))
-                onKeyFunc(makeKey(e), false)
+            _events.add(KeyboardEvent(e.keyCode, false))
         }
-
-        private fun isModifierCode(code: Int) = modifierCodes.contains(code)
-
-        private fun makeKey(e: KeyEvent) = Key(
-                e.keyCode, KeyModifiers(e.isShiftDown, e.isAltDown, e.isControlDown, e.isMetaDown)
-        )
     }
 
     private var _keys = ArrayList<Key>()
     private var _events = ArrayList<KeyboardEvent>()
 
-    private val keyEventAdapter = if(eventMode)
-            KeyAdapter { key, pressed ->
-                if(pressed)
-                    _keys.add(key)
-            }
-        else
-            KeyAdapter { key, pressed ->
-                if(pressed)
-                    _keys.add(key)
-            }
+    private val keyEventAdapter = if(eventMode) KeyboardEventAdapter() else KeyAdapter()
 
     init {
         window.pane.addKeyListener(keyEventAdapter)
@@ -162,6 +154,18 @@ class Keyboard(val window: Window, eventMode: Boolean = false) {
             val key = _keys.first()
             _keys.remove(key)
             key
+        }
+        else
+            null
+
+    /**
+     * Return a keyboard event or null.
+     */
+    fun getEvent(): KeyboardEvent? =
+        if(! _events.isEmpty()) {
+            val e = _events.first()
+            _events.remove(e)
+            e
         }
         else
             null

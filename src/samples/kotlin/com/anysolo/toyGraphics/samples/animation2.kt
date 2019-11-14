@@ -10,6 +10,7 @@ fun main() {
     val animationManager = AnimationManager()
     val jumpmanRunningLeft = Animation(jumpmanFrames, activeFrames = listOf(0, 1), delay = 100, loop = true)
     val jumpmanRunningRight = Animation(jumpmanFrames, activeFrames = listOf(4, 5), delay = 100, loop = true)
+    val jumpmanJumping = Animation(jumpmanFrames, activeFrames = (8..11).toList(), delay = 100, loop = true)
     val jumpmanStanding = Animation(jumpmanFrames, activeFrames = listOf(8), delay = 100, loop = true)
 
     var x = wnd.width/2
@@ -18,21 +19,26 @@ fun main() {
     var currentAnimation: Animation = jumpmanStanding
     currentAnimation.start(animationManager)
 
-    val keyboard = Keyboard(wnd)
+    val keyboard = Keyboard(wnd, eventMode = true)
 
     while(true) {
-        val key = keyboard.getPressedKey()
+        while(true) {
+            val kEvent = keyboard.getEvent() ?: break
 
-        if(key != null) {
             var newAnimation: Animation? = null
 
-            when(key.code) {
-                KeyCodes.LEFT   -> newAnimation = jumpmanRunningLeft
-                KeyCodes.RIGHT  -> newAnimation = jumpmanRunningRight
-                KeyCodes.SPACE  -> newAnimation = jumpmanStanding
-            }
+            if(kEvent.isPressed)
+                when(kEvent.code) {
+                    KeyCodes.LEFT -> newAnimation = jumpmanRunningLeft
+                    KeyCodes.RIGHT -> newAnimation = jumpmanRunningRight
+                    KeyCodes.SPACE -> newAnimation = jumpmanJumping
+                }
+            else
+                when(kEvent.code) {
+                    KeyCodes.LEFT, KeyCodes.RIGHT, KeyCodes.SPACE -> newAnimation = jumpmanStanding
+                }
 
-            if(newAnimation != null) {
+            if(newAnimation != null && newAnimation != currentAnimation) {
                 currentAnimation.stop()
                 newAnimation.start(animationManager)
                 currentAnimation = newAnimation
