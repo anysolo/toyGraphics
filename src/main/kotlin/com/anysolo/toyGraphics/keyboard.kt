@@ -7,7 +7,9 @@ import java.awt.event.KeyListener
 private val modifierCodes = listOf(KeyEvent.VK_SHIFT, KeyEvent.VK_ALT, KeyEvent.VK_CONTROL, KeyEvent.VK_META)
 
 
-
+/**
+ * What modifiers keys were pressed in the moment of when a normal key was pressed.
+ */
 data class KeyModifiers(
     val shift: Boolean = false, val alt: Boolean = false,
     val ctrl: Boolean = false, val meta: Boolean = false
@@ -44,6 +46,7 @@ class Key(
         get() = modifiers.meta
 }
 
+
 object KeyCodes {
     val LEFT = KeyEvent.VK_LEFT
     val RIGHT = KeyEvent.VK_RIGHT
@@ -78,11 +81,11 @@ object KeyCodes {
     val TAB = KeyEvent.VK_TAB
 }
 
+
 /**
  * Keyboard event.
  *
  * Contains information about what key was pressed or released.
- * Treat modifier keys (Ctrl, Shift, Alt and so on) as normal keys.
  * If isPressed == true then the key was pressed otherwise released.
  */
 data class KeyboardEvent(val code: Int, val isPressed: Boolean)
@@ -91,13 +94,13 @@ data class KeyboardEvent(val code: Int, val isPressed: Boolean)
 /** Use this class to work with keyboard
  *
  * You can work with keyboard in two modes. If [eventMode] == false
- * the keyboard will be collection Key objects. You should receive these object
+ * the keyboard collects Key objects. You receive these object
  * calling getPressedKey() method.
  * This mode is easier but you cannot detect
  * when a key was released. Also Ctrl, Alt, Shift, Meta keys will be treated as modifiers
  * for normal keys. For instance, you cannot detect when Ctrl was pressed.
  *
- * If [eventMode] == true the keyboard will be collecting KeyboardEvent objects. You should
+ * If [eventMode] == true the keyboard collects KeyboardEvent objects. You
  * get those objects calling getEvent() method.
  * In this mode modifier keys will be treated as normal keys. You also will receive event for both
  * pressed and released keys.
@@ -143,11 +146,12 @@ class Keyboard(val window: Window, eventMode: Boolean = false) {
         window.pane.addKeyListener(keyEventAdapter)
     }
 
-    /** Return the pressed key pressed. Pressed keys collected in queue.
-     *  This function returns the key which was pressed first.
-     *  If the queue is empty returns null
+    /** Returns the pressed key. Pressed keys are collected in the queue.
+     *  This function returns a pressed key from keyboard queue.
+     *  If the queue is empty it returns null
+     *  You must create the keyboard with evenMode=false to use this function.
      *
-     * Returns object of Key class containing the code of the key and all key modifiers (shift, ctrl, alt).
+     * Key object contains the code of the key and all key modifiers (shift, ctrl, alt).
      * */
     fun getPressedKey(): Key? =
         if(! _keys.isEmpty()) {
@@ -159,7 +163,9 @@ class Keyboard(val window: Window, eventMode: Boolean = false) {
             null
 
     /**
-     * Return a keyboard event or null.
+     * Return a keyboard event or null. Event are collected in the queue.
+     * If the queue is empty it returns null
+     * You must create the keyboard with evenMode=true to use this function.
      */
     fun getEvent(): KeyboardEvent? =
         if(! _events.isEmpty()) {
