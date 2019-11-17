@@ -171,14 +171,14 @@ class AnimationManager {
      */
     fun update() {
         val currentTime = Instant.now().toEpochMilli()
-        val forRemoval = mutableListOf<Animation>()
+        val stoppingSprites = mutableListOf<Animation>()
 
         sprites.forEach { sprite, spriteData ->
             if(updateSprite(sprite, spriteData, currentTime))
-                forRemoval.add(sprite)
+                stoppingSprites.add(sprite)
         }
 
-        forRemoval.forEach { sprites.remove(it) }
+        stoppingSprites.forEach { it.stop() }
     }
 
     private fun updateSprite(animation: Animation, data: SpriteData, currentTime: Long): Boolean {
