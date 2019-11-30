@@ -79,6 +79,11 @@ object KeyCodes {
     val SPACE = KeyEvent.VK_SPACE
     val BACKSPACE = KeyEvent.VK_BACK_SPACE
     val TAB = KeyEvent.VK_TAB
+
+    val ALT = KeyEvent.VK_ALT
+    val CTRL = KeyEvent.VK_CONTROL
+    val SHIFT = KeyEvent.VK_SHIFT
+    val META = KeyEvent.VK_META
 }
 
 
