@@ -4,7 +4,6 @@ import java.awt.BasicStroke
 import java.awt.Graphics2D
 import java.awt.geom.AffineTransform
 import java.io.Closeable
-import java.security.cert.TrustAnchor
 
 
 /** Use this class to draw on a window.
@@ -106,8 +105,8 @@ class Graphics(val window: Window): Closeable {
      *
      * Draws the text starting from x, y
      */
-    fun drawText(x: Int, y: Int, string: String) {
-        jdkGc.drawString(string, x, y)
+    fun drawText(x: Int, y: Int, text: String) {
+        jdkGc.drawString(text, x, y)
         window.doAutoSync()
     }
 

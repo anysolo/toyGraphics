@@ -1,6 +1,6 @@
 package com.anysolo.toyGraphics
 
-import kotlin.math.roundToInt
+import com.anysolo.toyGraphics.vector.*
 
 
 /** Allows to use turtle graphics like in Logo language.
@@ -24,8 +24,8 @@ class Turtle(val window: Window) {
 
   fun home() {
     position = Point(
-      (window.width.toDouble() / 2).roundToInt(),
-      (window.height.toDouble() / 2).roundToInt()
+      window.width.toDouble() / 2,
+      window.height.toDouble() / 2
     )
   }
 
@@ -35,12 +35,12 @@ class Turtle(val window: Window) {
       radianAngle -= 2*Math.PI
 
     val newPos = Point(
-      (position.x + Math.sin(radianAngle) * distance).roundToInt(),
-      (position.y + Math.cos(radianAngle) * distance).roundToInt()
+      position.x + Math.sin(radianAngle) * distance,
+      position.y + Math.cos(radianAngle) * distance
     )
 
     if(penIsDown)
-      gc.drawLine(position.x, position.y, newPos.x, newPos.y)
+      gc.drawLine(position, newPos)
 
     position = newPos
   }
