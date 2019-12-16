@@ -99,10 +99,13 @@ Some short examples
 You find more demo applications in toyGraphics-demos Github repository.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    quickStart
+   window
+   drawing/turtle.rst
+
 
 
 
