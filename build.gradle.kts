@@ -1,5 +1,6 @@
 import org.gradle.api.publish.maven.*
 
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.jfrog.bintray.gradle.BintrayExtension
 import org.jfrog.gradle.plugin.artifactory.dsl.ArtifactoryPluginConvention
 import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
@@ -19,7 +20,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        //classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.1")
         classpath("org.jfrog.buildinfo:build-info-extractor-gradle:4+")
     }
@@ -67,9 +68,22 @@ dependencies {
     compile(kotlin("stdlib", kotlinVersion))
     compile(kotlin("stdlib-jdk8"))
     compile(kotlin("reflect", kotlinVersion))
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
 
     samples(kotlin("stdlib", kotlinVersion))
     samples(kotlin("reflect", kotlinVersion))
+}
+
+tasks.test {
+    useJUnitPlatform()
+    testLogging {
+        events("passed", "skipped", "failed")
+    }
+}
+
+// config JVM target to 1.8 for kotlin compilation tasks
+tasks.withType<KotlinCompile>().configureEach {
+    kotlinOptions.jvmTarget = "1.8"
 }
 
 val dokka by tasks.getting(DokkaTask::class) {
