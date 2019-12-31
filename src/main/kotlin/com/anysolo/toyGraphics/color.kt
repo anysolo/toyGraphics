@@ -11,6 +11,26 @@ class Color(r: Int, g: Int, b: Int) {
     internal val jdkColor: JdkColor = JdkColor(r, g, b)
 
     internal constructor(jdkColor: JdkColor) : this(jdkColor.red, jdkColor.green, jdkColor.blue)
+
+    val red: Int
+        get() = jdkColor.red
+
+    val green: Int
+        get() = jdkColor.green
+
+    val blue: Int
+        get() = jdkColor.blue
+
+    override fun toString() = "Color($red, $green, $blue)"
+    override fun hashCode() = jdkColor.hashCode()
+
+    override fun equals(other: Any?): Boolean {
+        if(other == null)
+            return false
+
+        val o2 = other as? Color ?: return false
+        return jdkColor.equals(o2.jdkColor)
+    }
 }
 
 
