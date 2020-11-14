@@ -49,7 +49,7 @@ open class Window(
         val size = Dimension(width, height)
 
         frame.isUndecorated = true
-        frame.isResizable = false
+        frame.isResizable = true
         frame.size = size
 
         frame.addWindowListener(object : WindowAdapter() {

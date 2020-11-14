@@ -31,5 +31,6 @@ class EventManager(val window: Window) {
         window.pane.addKeyListener(KeyboardEventAdapter(this))
         window.pane.addMouseListener(MouseEventAdapter(this))
         window.pane.addMouseMotionListener(MouseMotionEventAdapter(this))
+        window.pane.addComponentListener(WindowEventAdapter(this))
     }
 }
