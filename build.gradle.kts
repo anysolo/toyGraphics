@@ -12,7 +12,7 @@ import java.util.*
 
 
 buildscript {
-    val kotlinVersion = "1.3.41"
+    val kotlinVersion = "1.4.0"
 
     repositories {
         mavenCentral()
@@ -26,10 +26,10 @@ buildscript {
     }
 }
 
-val kotlinVersion = "1.3.41"
+val kotlinVersion = "1.4.0"
 
 plugins {
-    kotlin("jvm") version "1.3.41"
+    kotlin("jvm") version "1.4.0"
     maven
     `maven-publish`
     signing
@@ -43,7 +43,7 @@ repositories {
     mavenCentral()
 }
 
-val myVersion = "1.0"
+val myVersion = "dev-2.0-0.1"
 
 group = "com.anysolo"
 version = myVersion

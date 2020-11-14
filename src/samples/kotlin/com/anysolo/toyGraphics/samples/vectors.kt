@@ -1,4 +1,4 @@
-package com.anysolo.toyGraphics.demo
+package com.anysolo.toyGraphics.samples
 
 import com.anysolo.toyGraphics.*
 import com.anysolo.toyGraphics.vector.*

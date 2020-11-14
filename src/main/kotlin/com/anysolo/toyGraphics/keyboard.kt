@@ -2,6 +2,7 @@ package com.anysolo.toyGraphics
 
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
+import java.util.*
 
 
 private val modifierCodes = listOf(KeyEvent.VK_SHIFT, KeyEvent.VK_ALT, KeyEvent.VK_CONTROL, KeyEvent.VK_META)
@@ -25,6 +26,8 @@ class Key(
      * Key code does not change when you press modifiers keys like shift, control, alt and so on.
      */
     val code: Int,
+
+    val char: Char,
 
     /**
      * Modifiers pressed at the same moment the key was pressed
@@ -84,33 +87,19 @@ object KeyCodes {
     val CTRL = KeyEvent.VK_CONTROL
     val SHIFT = KeyEvent.VK_SHIFT
     val META = KeyEvent.VK_META
+
+    val arrows = setOf(KeyCodes.LEFT, KeyCodes.RIGHT, KeyCodes.UP, KeyCodes.DOWN)
 }
-
-
-/**
- * Keyboard event.
- *
- * Contains information about what key was pressed or released.
- * If isPressed == true then the key was pressed otherwise released.
- */
-data class KeyboardEvent(val code: Int, val isPressed: Boolean)
 
 
 /** Use this class to work with keyboard
  *
- * You can work with keyboard in two modes. If [eventMode] == false
- * the keyboard collects Key objects. You receive these object
+ * keyboard collects Key objects. You receive these object
  * calling getPressedKey() method.
- * This mode is easier but you cannot detect
- * when a key was released. Also Ctrl, Alt, Shift, Meta keys will be treated as modifiers
- * for normal keys. For instance, you cannot detect when Ctrl was pressed.
- *
- * If [eventMode] == true the keyboard collects KeyboardEvent objects. You
- * get those objects calling getEvent() method.
- * In this mode modifier keys will be treated as normal keys. You also will receive event for both
- * pressed and released keys.
+ * You cannot detect when a key was released.
+ * Ctrl, Alt, Shift, Meta keys will be treated as modifiers for normal keys.
  * */
-class Keyboard(val window: Window, eventMode: Boolean = false) {
+class Keyboard(val window: Window) {
     internal inner class KeyAdapter: KeyListener {
         override fun keyTyped(e: KeyEvent?) {}
 
@@ -126,29 +115,14 @@ class Keyboard(val window: Window, eventMode: Boolean = false) {
         private fun isModifierCode(code: Int) = code in modifierCodes
 
         private fun makeKey(e: KeyEvent) = Key(
-            e.keyCode, KeyModifiers(e.isShiftDown, e.isAltDown, e.isControlDown, e.isMetaDown)
+            e.keyCode, e.keyChar, KeyModifiers(e.isShiftDown, e.isAltDown, e.isControlDown, e.isMetaDown)
         )
     }
 
-    internal inner class KeyboardEventAdapter: KeyListener {
-        override fun keyTyped(e: KeyEvent?) {}
-
-        override fun keyPressed(e: KeyEvent) {
-            _events.add(KeyboardEvent(e.keyCode, true))
-        }
-
-        override fun keyReleased(e: KeyEvent) {
-            _events.add(KeyboardEvent(e.keyCode, false))
-        }
-    }
-
     private var _keys = ArrayList<Key>()
-    private var _events = ArrayList<KeyboardEvent>()
-
-    private val keyEventAdapter = if(eventMode) KeyboardEventAdapter() else KeyAdapter()
 
     init {
-        window.pane.addKeyListener(keyEventAdapter)
+        window.pane.addKeyListener(KeyAdapter())
     }
 
     /** Returns the pressed key. Pressed keys are collected in the queue.
@@ -163,20 +137,6 @@ class Keyboard(val window: Window, eventMode: Boolean = false) {
             val key = _keys.first()
             _keys.remove(key)
             key
-        }
-        else
-            null
-
-    /**
-     * Return a keyboard event or null. Event are collected in the queue.
-     * If the queue is empty it returns null
-     * You must create the keyboard with evenMode=true to use this function.
-     */
-    fun getEvent(): KeyboardEvent? =
-        if(! _events.isEmpty()) {
-            val e = _events.first()
-            _events.remove(e)
-            e
         }
         else
             null
