@@ -1,17 +1,24 @@
 package com.anysolo.toyGraphics.vector
 
+import com.anysolo.toyGraphics.Pos
+import com.anysolo.toyGraphics.Size
 import java.io.Serializable
-
+import kotlin.math.roundToInt
 
 
 /** Point on the window. */
 data class Point(val x: Double, val y: Double): Serializable {
     constructor(x: Int, y: Int): this(x.toDouble(), y.toDouble())
+    constructor(pos: Pos): this(pos.x.toDouble(), pos.y.toDouble())
+
+    fun roundToPos() = Pos(x.roundToInt(), y.roundToInt())
 }
+
 
 /** 2D vector. */
 data class Vector(val x: Double, val y: Double): Serializable {
     constructor(x: Int, y: Int): this(x.toDouble(), y.toDouble())
+    constructor(size: Size): this(size.width.toDouble(), size.height.toDouble())
 
     operator fun plus(v2: Vector) = Vector(x + v2.x, y + v2.y)
     operator fun minus(v2: Vector) = Vector(x - v2.x, y - v2.y)
@@ -25,6 +32,8 @@ data class Vector(val x: Double, val y: Double): Serializable {
     operator fun div(n: Int) = Vector(x / n, y / n)
 
     operator fun unaryMinus() = Vector(-x, -y)
+
+    fun roundToSize() = Size(x.roundToInt(), y.roundToInt())
 }
 
 fun Vector.horizontal() = Vector(x, 0.0)
@@ -35,5 +44,5 @@ operator fun Point.plus(delta: Vector) = Point(x + delta.x, y + delta.y)
 operator fun Point.minus(delta: Vector) = Point(x - delta.x, y - delta.y)
 
 
-/** Rectangular. */
-data class Rect(val topLeft: Point, val size: Vector): Serializable
+///** Rectangular. */
+//data class Rect(val topLeft: Point, val size: Vector): Serializable

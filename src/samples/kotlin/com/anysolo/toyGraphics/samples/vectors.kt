@@ -14,7 +14,7 @@ fun main() {
     var p1 = Point(0, 0)
 
     repeat(20) {
-        g.drawRect(p1, objectSize)
+        g.drawRect(p1.roundToPos(), objectSize.roundToSize())
 
         p1 += delta
         delta *= 1.2

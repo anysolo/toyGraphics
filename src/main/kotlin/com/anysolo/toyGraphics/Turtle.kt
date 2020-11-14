@@ -40,7 +40,7 @@ class Turtle(val window: Window) {
     )
 
     if(penIsDown)
-      gc.drawLine(position, newPos)
+      gc.drawLine(position.roundToPos(), newPos.roundToPos())
 
     position = newPos
   }
