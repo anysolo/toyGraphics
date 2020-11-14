@@ -1,8 +1,7 @@
 package com.anysolo.toyGraphics.events
 
 import com.anysolo.toyGraphics.Window
-import java.awt.event.MouseEvent
-import java.awt.event.MouseListener
+
 
 interface Event
 
