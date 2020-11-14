@@ -1,8 +1,12 @@
 package com.anysolo.toyGraphics
 
+import com.anysolo.toyGraphics.events.WindowEventAdapter
+import com.anysolo.toyGraphics.events.WindowResizedEvent
 import java.awt.*
 
 import com.anysolo.toyGraphics.internals.GraphicPane
+import java.awt.event.ComponentAdapter
+import java.awt.event.ComponentEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import kotlin.system.exitProcess
@@ -29,7 +33,7 @@ open class Window(
     val height: Int,
 
     /** Background color. When you call Graphics.clean() it fills at the window with this color. */
-    background: Color = Pal16.white,
+    background: Color = defaultBackground,
 
     /** Buffered mode. Set it to true if you need to draw fast and without flickering. */
     val buffered: Boolean = false,
@@ -42,15 +46,25 @@ open class Window(
      * */
     val autoSync: Boolean = !buffered
 ) {
+    companion object {
+        val defaultBackground = Pal16.white
+    }
+
     private val frame = Frame()
     internal val pane: GraphicPane
 
+    constructor(size: Size, background: Color = defaultBackground, buffered: Boolean = false):
+        this(size.width, size.height, background, buffered=buffered)
+
+    val size: Size
+        get() = Size(width, height)
+
     init {
-        val size = Dimension(width, height)
+        val dimension = Dimension(width, height)
 
         frame.isUndecorated = true
         frame.isResizable = true
-        frame.size = size
+        frame.size = dimension
 
         frame.addWindowListener(object : WindowAdapter() {
             override fun windowClosing(windowEvent: WindowEvent?) {
@@ -59,7 +73,7 @@ open class Window(
         })
 
         pane = GraphicPane(background)
-        pane.size = size
+        pane.size = dimension
 
         frame.add(pane)
         frame.repaint()
@@ -71,6 +85,14 @@ open class Window(
 
         if(buffered)
             pane.createBufferStrategy(2)
+
+        pane.addComponentListener(object : ComponentAdapter() {
+            override fun componentResized(e: ComponentEvent) {
+                val newSize = Size(e.component.width, e.component.height)
+                println(newSize)
+            }
+
+        })
     }
 
     /**
