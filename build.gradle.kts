@@ -43,7 +43,7 @@ repositories {
     mavenCentral()
 }
 
-val myVersion = "dev-2.0-0.1"
+val myVersion = "dev2-0.1"
 
 group = "com.anysolo"
 version = myVersion
