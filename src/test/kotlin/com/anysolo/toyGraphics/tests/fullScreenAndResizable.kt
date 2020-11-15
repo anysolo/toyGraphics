@@ -16,7 +16,6 @@ fun main() {
         Graphics(wnd).use { gc ->
             gc.color = Pal16[Random.nextInt(0, 15)]
             gc.drawLine(makeRandomPos(wnd.size), makeRandomPos(wnd.size))
-            println(wnd.size)
             sleep(1000)
         }
     }
