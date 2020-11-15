@@ -9,3 +9,7 @@ fun Double.format(digits: Int) = java.lang.String.format("%.${digits}f", this)
 
 fun Any.getClassName() = javaClass.simpleName
 fun Any.getFullClassName() = javaClass.canonicalName
+
+
+fun Char.isPrintable(ch: Char) =
+    ch.isLetterOrDigit() || ch in " `~@#$%^&*()_+-=|\\:;\"'<,>.?/"
