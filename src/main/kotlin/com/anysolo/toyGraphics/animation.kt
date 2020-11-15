@@ -92,6 +92,9 @@ class Animation(
     val width: Int
         get() = frames.width
 
+    val size: Size
+        get() = Size(width, height)
+
     val isRunning: Boolean
         get() = manager != null
 
@@ -140,8 +143,8 @@ class Animation(
         }
 }
 
-/** Sprite manager switches frames in all sprites when you call its update method. */
-internal data class SpriteData(var currentFrameIndex: Int, var lastFrameTime: Long)
+/** Animation manager switches frames in all sprites when you call its update method. */
+internal data class AnimationData(var currentFrameIndex: Int, var lastFrameTime: Long)
 
 
 /**
@@ -151,18 +154,18 @@ internal data class SpriteData(var currentFrameIndex: Int, var lastFrameTime: Lo
  * You also must call update() method of AnimationManager at the end of each game loop.
  */
 class AnimationManager {
-    private val sprites = mutableMapOf<Animation, SpriteData> ()
+    private val animations = mutableMapOf<Animation, AnimationData> ()
 
-    internal fun add(sprite: Animation) {
-        sprites[sprite] = SpriteData(currentFrameIndex = 0, lastFrameTime = 0)
+    internal fun add(animation: Animation) {
+        animations[animation] = AnimationData(currentFrameIndex = 0, lastFrameTime = 0)
     }
 
     internal fun remove(animation: Animation) {
-        sprites.remove(animation)
+        animations.remove(animation)
     }
 
     internal fun getCurrentFrameNumber(animation: Animation): Int? =
-        sprites[animation]?.currentFrameIndex
+        animations[animation]?.currentFrameIndex
 
     /** Goes through all animations and switch frames if needed.
      *
@@ -173,7 +176,7 @@ class AnimationManager {
         val currentTime = Instant.now().toEpochMilli()
         val stoppingSprites = mutableListOf<Animation>()
 
-        sprites.forEach { sprite, spriteData ->
+        animations.forEach { sprite, spriteData ->
             if(updateSprite(sprite, spriteData, currentTime))
                 stoppingSprites.add(sprite)
         }
@@ -181,7 +184,7 @@ class AnimationManager {
         stoppingSprites.forEach { it.stop() }
     }
 
-    private fun updateSprite(animation: Animation, data: SpriteData, currentTime: Long): Boolean {
+    private fun updateSprite(animation: Animation, data: AnimationData, currentTime: Long): Boolean {
         if(currentTime - data.lastFrameTime >= animation.delay) {
             data.lastFrameTime = currentTime
 

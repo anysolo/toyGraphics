@@ -22,6 +22,9 @@ class Image internal constructor(internal val jdkImage: BufferedImage) {
     /** Height of the image in pixels */
     val height: Int
         get() = jdkImage.height
+
+    val size: Size
+        get() = Size(width, height)
 }
 
 internal object ImageUtils {
