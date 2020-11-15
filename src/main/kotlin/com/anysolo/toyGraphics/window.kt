@@ -27,10 +27,10 @@ import kotlin.system.exitProcess
  */
 open class Window(
     /** Width in pixels. */
-    val width: Int,
+    width: Int,
 
     /** Height in pixels. */
-    val height: Int,
+    height: Int,
 
     /** Background color. When you call Graphics.clean() it fills at the window with this color. */
     background: Color = defaultBackground,
@@ -46,6 +46,14 @@ open class Window(
      * */
     val autoSync: Boolean = !buffered
 ) {
+    var size = Size(width, height)
+
+    val width: Int
+        get() = size.width
+
+    val height: Int
+        get() = size.height
+
     companion object {
         val defaultBackground = Pal16.white
     }
@@ -55,9 +63,6 @@ open class Window(
 
     constructor(size: Size, background: Color = defaultBackground, buffered: Boolean = false):
         this(size.width, size.height, background, buffered=buffered)
-
-    val size: Size
-        get() = Size(width, height)
 
     init {
         val dimension = Dimension(width, height)
@@ -88,10 +93,8 @@ open class Window(
 
         pane.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent) {
-                val newSize = Size(e.component.width, e.component.height)
-                println(newSize)
+                size = Size(e.component.width, e.component.height)
             }
-
         })
     }
 
