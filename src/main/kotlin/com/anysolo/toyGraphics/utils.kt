@@ -1,7 +1,7 @@
 package com.anysolo.toyGraphics
 
 
-/** Just do nothing for n milliceconds. */
+/** Just do nothing for n milliseconds. */
 fun sleep(ms: Int) = Thread.sleep(ms.toLong())
 
 
