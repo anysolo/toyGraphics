@@ -43,7 +43,7 @@ repositories {
     mavenCentral()
 }
 
-val myVersion = "dev-v2-0.1"
+val myVersion = "2.0-SNAPSHOT"
 
 group = "com.anysolo"
 version = myVersion
@@ -68,6 +68,7 @@ dependencies {
     compile(kotlin("stdlib", kotlinVersion))
     compile(kotlin("stdlib-jdk8"))
     compile(kotlin("reflect", kotlinVersion))
+    implementation("com.esotericsoftware.kryo:kryo5:5.0.0")
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
 
     samples(kotlin("stdlib", kotlinVersion))

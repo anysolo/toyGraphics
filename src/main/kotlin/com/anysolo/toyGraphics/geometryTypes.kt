@@ -5,11 +5,17 @@ import java.io.Serializable
 
 
 /** Pos on the window. */
-data class Pos(val x: Int, val y: Int): Serializable
+data class Pos(val x: Int, val y: Int): Serializable {
+    operator fun plus(delta: Size) = Pos(x + delta.width, y + delta.height)
+    operator fun minus(delta: Size) = Pos(x - delta.width, y - delta.height)
+}
 
 
 /** 2D Size. */
-data class Size(val width: Int, val height: Int): Serializable
+data class Size(val width: Int, val height: Int): Serializable {
+    fun horizontal() = Size(0, height)
+    fun vertical() = Size(0, height)
+}
 
 
 /** Rectangular. */

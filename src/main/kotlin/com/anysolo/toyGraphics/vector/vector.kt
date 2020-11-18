@@ -39,10 +39,12 @@ data class Vector(val x: Double, val y: Double): Serializable {
 fun Vector.horizontal() = Vector(x, 0.0)
 fun Vector.vertical() = Vector(0.0, y)
 
+fun Pos.toPoint() = Point(x.toDouble(), y.toDouble())
+
 
 operator fun Point.plus(delta: Vector) = Point(x + delta.x, y + delta.y)
 operator fun Point.minus(delta: Vector) = Point(x - delta.x, y - delta.y)
 
 
-///** Rectangular. */
-//data class Rect(val topLeft: Point, val size: Vector): Serializable
+/** Rectangular. */
+data class Area(val topLeft: Point, val size: Vector): Serializable
