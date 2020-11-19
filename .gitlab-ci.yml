@@ -6,7 +6,6 @@ build:
   stage: build
   script:
     - echo "this is building"
-    - hostname
     - mkdir builds
     - touch builds/data.txt
     - echo "false" > builds/data.txt
@@ -18,6 +17,5 @@ test:
   stage: test
   script:
     - echo "this is testing"
-    - hostname
     - test -f builds/data.txt
     - grep "true" builds/data.txt
