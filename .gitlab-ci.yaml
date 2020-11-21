@@ -1,0 +1,17 @@
+stages:
+  - build
+  - test
+
+build:
+  stage: build
+  script:
+    - ./gradlew build -x test
+
+test:
+  stage: test
+  script:
+    - ./gradlew test
+  artifacts:
+    when: always
+    reports:
+      junit: build/test-results/test/**/TEST-*.xml
