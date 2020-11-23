@@ -1,6 +1,7 @@
 package com.anysolo.toyGraphics.events
 
 import com.anysolo.toyGraphics.Window
+import java.util.*
 
 
 interface Event
@@ -11,14 +12,14 @@ fun Char.isPrintable(ch: Char) =
 
 
 class EventManager(val window: Window) {
-    private var eventQueue: MutableList<Event> = ArrayList()
+    private var eventQueue: Queue<Event> = ArrayDeque()
 
     fun takeEvent(): Event? {
         if(eventQueue.isEmpty())
             return null
 
         val event = eventQueue.first()
-        eventQueue.removeFirst()
+        eventQueue.remove()
         return event
     }
 
