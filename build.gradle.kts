@@ -12,24 +12,21 @@ import java.util.*
 
 
 buildscript {
-    val kotlinVersion = "1.4.0"
-
     repositories {
         mavenCentral()
         jcenter()
     }
 
     dependencies {
-        //classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
         classpath("org.junit.platform:junit-platform-gradle-plugin:1.0.1")
         classpath("org.jfrog.buildinfo:build-info-extractor-gradle:4+")
     }
 }
 
-val kotlinVersion = "1.4.0"
-
 plugins {
-    kotlin("jvm") version "1.4.0"
+    val kotlinVersion = "1.4.20"
+
+    kotlin("jvm") version kotlinVersion
     maven
     `maven-publish`
     signing
@@ -65,13 +62,14 @@ sourceSets.create("samples") {
 
 dependencies {
     compile(gradleApi())
-    compile(kotlin("stdlib", kotlinVersion))
+    compile(kotlin("stdlib"))
     compile(kotlin("stdlib-jdk8"))
-    compile(kotlin("reflect", kotlinVersion))
+    compile(kotlin("reflect"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
+    implementation("org.reflections:reflections:0.9.12")
 
-    samples(kotlin("stdlib", kotlinVersion))
-    samples(kotlin("reflect", kotlinVersion))
+    samples(kotlin("stdlib"))
+    samples(kotlin("reflect"))
 }
 
 tasks.test {
