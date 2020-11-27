@@ -1,7 +1,5 @@
 package com.anysolo.toyGraphics
 
-import com.anysolo.toyGraphics.events.WindowEventAdapter
-import com.anysolo.toyGraphics.events.WindowResizedEvent
 import java.awt.*
 
 import com.anysolo.toyGraphics.internals.GraphicPane

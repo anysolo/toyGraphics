@@ -8,6 +8,7 @@ import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
 import org.jetbrains.dokka.gradle.DokkaTask
 
 import groovy.lang.GroovyObject
+import sun.jvmstat.monitor.MonitoredVmUtil.jvmArgs
 import java.util.*
 
 
@@ -36,6 +37,7 @@ plugins {
     id("org.jetbrains.dokka") version "0.9.18"
     id("com.jfrog.bintray") version "1.8.4"
     id("com.jfrog.artifactory") version "4.9.5"
+    application
 }
 
 repositories {
@@ -69,6 +71,7 @@ dependencies {
     compile(kotlin("stdlib-jdk8"))
     compile(kotlin("reflect", kotlinVersion))
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
+    implementation("com.esotericsoftware:kryo:5.0.1")
 
     samples(kotlin("stdlib", kotlinVersion))
     samples(kotlin("reflect", kotlinVersion))
@@ -85,6 +88,13 @@ tasks.test {
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+application {
+    if (JavaVersion.current().isJava9Compatible) {
+        //applicationDefaultJvmArgs = listOf("--add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED")
+    }
+}
+
 
 val dokka by tasks.getting(DokkaTask::class) {
     outputFormat = "html"
