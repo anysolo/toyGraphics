@@ -87,7 +87,6 @@ class PolymorphTests {
             output.writeObject(o2)
         }
 
-
         dataEngine.openInput(dataFilename).use { input ->
             val o11 = input.readObject<IScreenObject>()
             val o22 = input.readObject<IScreenObject>()

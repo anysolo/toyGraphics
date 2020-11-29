@@ -24,5 +24,6 @@ class Input internal constructor (private val stream: DataInputStream, val class
     override fun close() = stream.close()
 
     fun readInt(): Int = stream.readInt()
+    fun readDouble(): Double = stream.readDouble()
     fun readString(): String = stream.readUTF()
 }

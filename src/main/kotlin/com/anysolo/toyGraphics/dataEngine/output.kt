@@ -6,6 +6,7 @@ import java.io.DataOutputStream
 
 class Output internal constructor(private val stream: DataOutputStream, val classCatalog: ClassCatalog): Closeable {
     fun writeInt(data: Int) = stream.writeInt(data)
+    fun writeDouble(data: Double) = stream.writeDouble(data)
     fun writeString(data: String) = stream.writeUTF(data)
 
     fun writeValue(obj: Writable) {
