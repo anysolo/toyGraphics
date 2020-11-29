@@ -1,4 +1,4 @@
-package com.anysolo.toyGraphics.dataFile
+package com.anysolo.toyGraphics.dataEngine
 
 import org.reflections.Reflections
 import org.reflections.scanners.SubTypesScanner
@@ -10,10 +10,18 @@ import java.io.DataOutputStream
 import java.io.File
 
 
-data class ClassData(val id: Int, val hid: String)
+typealias InstanceFactory = () -> Writable
+
+data class ClassData(val id: Int, val hid: String, val instanceFactory: InstanceFactory)
 
 
-class DataEngine(val packages: List<String>) {
+interface ClassCatalog {
+    fun findClassByHid(hid: String): ClassData
+    fun findClassById(id: Int): ClassData
+}
+
+
+class DataEngine(val packages: List<String>): ClassCatalog {
     val reflections = createReflections()
     val classData: List<ClassData> = createClassData()
     val idToClassData = classData.associateBy { it.id }
@@ -42,13 +50,26 @@ class DataEngine(val packages: List<String>) {
     private fun createClassData(): List<ClassData> =
         reflections.getTypesAnnotatedWith(ClassMeta::class.java).map {
             val annotation = it.getAnnotation(ClassMeta::class.java)
-            ClassData(annotation.hid.hashCode(), annotation.hid)
+            ClassData(
+                annotation.hid.hashCode(),
+                annotation.hid
+            ) { it.getDeclaredConstructor().newInstance() as Writable }
         }
 
-    fun createOutput(filename: String) = OutputFile(DataOutputStream(File(filename).outputStream()))
-    fun openInput(filename: String) = InputFile(DataInputStream(File(filename).inputStream()))
+    fun createOutput(filename: String) =
+        Output(DataOutputStream(File(filename).outputStream()), this)
+
+    fun openInput(filename: String) =
+        Input(DataInputStream(File(filename).inputStream()), this)
 
     init {
         println(classData)
     }
+
+    override fun findClassByHid(hid: String): ClassData =
+        hidToClassData[hid] ?: throw RuntimeException("Cannot find class with hid: $hid")
+
+
+    override fun findClassById(id: Int): ClassData =
+        idToClassData[id] ?: throw RuntimeException("Cannot find class with id: $id")
 }
