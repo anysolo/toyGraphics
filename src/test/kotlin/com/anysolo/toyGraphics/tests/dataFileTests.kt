@@ -8,18 +8,12 @@ import org.junit.jupiter.api.Test
 
 
 @ClassMeta(hid = "MyClass1")
-data class MyClass1(val n1: Int, val s1: String) {
-    @Serializer
-    class MySerializer: ISerializer<MyClass1> {
-        override fun save(output: Output, data: MyClass1) {
-            output.write(data.n1)
-            output.write(data.s1)
-        }
+data class MyClass1(val n1: Int, val s1: String): Savable {
+    constructor(input: Input): this(input.readInt(), input.readString())
 
-        override fun load(input: Input) = MyClass1(
-            input.readInt(),
-            input.readString()
-        )
+    override fun save(output: Output) {
+        output.write(n1)
+        output.write(s1)
     }
 }
 
