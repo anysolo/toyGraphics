@@ -1,33 +1,37 @@
 package com.anysolo.toyGraphics.tests.engine
 
 
-import com.esotericsoftware.kryo.Kryo
-import com.esotericsoftware.kryo.io.Input
-import com.esotericsoftware.kryo.io.Output
+
 import org.junit.jupiter.api.Assertions
 
 import org.junit.jupiter.api.Test
-import java.io.FileInputStream
-import java.io.FileOutputStream
+
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.*
+import java.io.File
 
 
-data class C1(val n1: Int = 0)
+@Serializable
+data class C1(val n1: Int)
+
 
 class GameObjectsTests {
     @Test
     fun t1() {
-        val kryo = Kryo()
-        kryo.register(C1::class.java)
-
+        val dataFilename = "test.dat"
         val c1 = C1(123)
+        val s = Json.encodeToString(c1)
+        println("s")
+        println(s)
 
-        Output(FileOutputStream("test.dat")).use { output ->
-            kryo.writeObject(output, c1)
-        }
+        File(dataFilename).writeText(s)
 
-        Input(FileInputStream("test.dat")).use { input ->
-            val c11 = kryo.readObject(input, C1::class.java)
-            Assertions.assertEquals(c1, c11)
-        }
+        val s1 = File(dataFilename).readText()
+        val c11 = Json.decodeFromString<C1>(s1)
+        println(c11)
+
+        Assertions.assertEquals(c1, c11)
     }
 }

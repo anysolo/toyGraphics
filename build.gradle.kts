@@ -8,13 +8,10 @@ import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
 import org.jetbrains.dokka.gradle.DokkaTask
 
 import groovy.lang.GroovyObject
-import sun.jvmstat.monitor.MonitoredVmUtil.jvmArgs
 import java.util.*
 
 
 buildscript {
-    val kotlinVersion = "1.4.0"
-
     repositories {
         mavenCentral()
         jcenter()
@@ -27,17 +24,17 @@ buildscript {
     }
 }
 
-val kotlinVersion = "1.4.0"
-
 plugins {
-    kotlin("jvm") version "1.4.0"
+    val kotlinVersion = "1.4.20"
+
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.serialization") version kotlinVersion
     maven
     `maven-publish`
     signing
     id("org.jetbrains.dokka") version "0.9.18"
     id("com.jfrog.bintray") version "1.8.4"
     id("com.jfrog.artifactory") version "4.9.5"
-    application
 }
 
 repositories {
@@ -66,15 +63,24 @@ sourceSets.create("samples") {
 }
 
 dependencies {
-    compile(gradleApi())
-    compile(kotlin("stdlib", kotlinVersion))
-    compile(kotlin("stdlib-jdk8"))
-    compile(kotlin("reflect", kotlinVersion))
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
-    implementation("com.esotericsoftware:kryo:5.0.1")
+    //val jacksonVer = "2.11.3"
+    val kotlinVersion = "1.4.20"
 
-    samples(kotlin("stdlib", kotlinVersion))
-    samples(kotlin("reflect", kotlinVersion))
+    compile(gradleApi())
+    compile(kotlin("stdlib"))
+    compile(kotlin("stdlib-jdk8"))
+    compile(kotlin("reflect"))
+    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
+
+    compile("org.jetbrains.kotlinx:kotlinx-serialization-json:1.0.1")
+/*
+    implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVer")
+    implementation("com.fasterxml.jackson.core:annotations:$jacksonVer")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:$jacksonVer")
+*/
+
+    samples(kotlin("stdlib"))
+    samples(kotlin("reflect"))
 }
 
 tasks.test {
@@ -87,12 +93,6 @@ tasks.test {
 // config JVM target to 1.8 for kotlin compilation tasks
 tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions.jvmTarget = "1.8"
-}
-
-application {
-    if (JavaVersion.current().isJava9Compatible) {
-        //applicationDefaultJvmArgs = listOf("--add-opens java.base/java.util.concurrent.atomic=ALL-UNNAMED")
-    }
 }
 
 
