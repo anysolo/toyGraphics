@@ -1,8 +1,6 @@
 package com.anysolo.toyGraphics.gameEngine
 
 import com.anysolo.toyGraphics.Color
-import com.anysolo.toyGraphics.Pal16
-import com.anysolo.toyGraphics.dataEngine.DataEngine
 import java.io.File
 
 
