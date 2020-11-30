@@ -1,4 +1,4 @@
-package com.anysolo.toyGraphics.engine
+package com.anysolo.toyGraphics.gameEngine
 
 import com.anysolo.toyGraphics.Graphics
 import java.time.Instant

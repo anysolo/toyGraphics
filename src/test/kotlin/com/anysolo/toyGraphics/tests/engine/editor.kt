@@ -2,8 +2,8 @@ package com.anysolo.toyGraphics.tests.engine
 
 import com.anysolo.toyGraphics.Image
 import com.anysolo.toyGraphics.Pal16
-import com.anysolo.toyGraphics.engine.LevelEditor
-import com.anysolo.toyGraphics.engine.VisibleImageObject
+import com.anysolo.toyGraphics.gameEngine.LevelEditor
+import com.anysolo.toyGraphics.gameEngine.VisibleImageObject
 
 
 fun main() {
