@@ -137,7 +137,9 @@ class LevelEditor(val dataEngine: DataEngine, val background: Color) {
     }
 
     fun save(filename: String) {
-
+        dataEngine.createOutput(filename).use { output ->
+            output.writeValue(level)
+        }
     }
 
     private fun createObject(hid: String): GameObject {
