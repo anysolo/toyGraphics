@@ -1,11 +1,11 @@
 package com.anysolo.toyGraphics.gameEngine
 
 import com.anysolo.toyGraphics.*
+import com.anysolo.toyGraphics.dataEngine.DataEngine
 import com.anysolo.toyGraphics.events.*
 import com.anysolo.toyGraphics.vector.*
 
 
-typealias ObjectFactory = (p: Point) -> GameObject
 typealias ActionAfterStringInput = (str: String) -> Unit
 
 
@@ -78,8 +78,7 @@ class LevelDrawer(val level: GameLevel, val gc: Graphics) {
 }
 
 
-class LevelEditor(val background: Color) {
-    private val objectFactories = mutableMapOf<String, ObjectFactory>()
+class LevelEditor(val dataEngine: DataEngine, val background: Color) {
     private var level: GameLevel = GameLevel()
     private val wnd = Window(1024, 768, background = background, buffered = true)
     private var cursorPos = Pos(wnd.width/2, wnd.height/2)
@@ -99,17 +98,13 @@ class LevelEditor(val background: Color) {
 
     private var currentBlockHid = ""
         set(value) {
-            if(value !in objectFactories)
+            if(!dataEngine.hasHid(value))
                 throw EditorError("There is not registration for object factory. Hid: $value")
 
             field = value
         }
 
     fun isModeRunning(): Boolean = mode?.isRunning() == true
-
-    fun register(hid: String, factory: ObjectFactory) {
-        objectFactories[hid] = factory
-    }
 
     fun edit() {
         while (true) {
@@ -146,10 +141,11 @@ class LevelEditor(val background: Color) {
     }
 
     private fun createObject(hid: String): GameObject {
-        val objectFactory = objectFactories[hid] ?:
-            throw EditorError("There is not registration for object factory. Hid: $hid")
+        val obj = dataEngine.createInstanceByHid(hid) as? GameObject
+            ?: throw RuntimeException("Class with hid: $hid is not GameObject")
 
-        val obj = objectFactory(cursorPos.toPoint())
+        obj.point = cursorPos.toPoint()
+
         level.addObject(obj)
 
         return obj
@@ -178,7 +174,7 @@ class LevelEditor(val background: Color) {
     }
 
     private fun drawStatusLine(gc: Graphics) {
-        var statusLineItems = mutableListOf<String>()
+        val statusLineItems = mutableListOf<String>()
 
         if(currentBlockHid != "")
             statusLineItems.add("currentBlock: '$currentBlockHid'")

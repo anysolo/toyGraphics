@@ -1,6 +1,8 @@
 package com.anysolo.toyGraphics
 
 
+import com.anysolo.toyGraphics.dataEngine.Input
+import com.anysolo.toyGraphics.dataEngine.Output
 import java.io.Serializable
 
 
@@ -10,6 +12,13 @@ data class Pos(val x: Int, val y: Int): Serializable {
     operator fun minus(delta: Size) = Pos(x - delta.width, y - delta.height)
 }
 
+fun Input.readPos() = Pos(readInt(), readInt())
+
+fun Output.writePos(p: Pos) {
+    writeInt(p.x)
+    writeInt(p.y)
+}
+
 
 /** 2D Size. */
 data class Size(val width: Int, val height: Int): Serializable {
@@ -17,9 +26,23 @@ data class Size(val width: Int, val height: Int): Serializable {
     fun vertical() = Size(0, height)
 }
 
+fun Input.readSize() = Size(readInt(), readInt())
+
+fun Output.writeSize(s: Size) {
+    writeInt(s.width)
+    writeInt(s.height)
+}
+
 
 /** Rectangular. */
 data class Rect(val topLeft: Pos, val size: Size): Serializable
+
+fun Input.readRect() = Rect(readPos(), readSize())
+
+fun Output.writeRect(r: Rect) {
+    writePos(r.topLeft)
+    writeSize(r.size)
+}
 
 
 fun Graphics.drawDot(p: Pos) = drawDot(p.x, p.x)

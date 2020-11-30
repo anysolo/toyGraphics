@@ -2,6 +2,8 @@ package com.anysolo.toyGraphics.vector
 
 import com.anysolo.toyGraphics.Pos
 import com.anysolo.toyGraphics.Size
+import com.anysolo.toyGraphics.dataEngine.Input
+import com.anysolo.toyGraphics.dataEngine.Output
 import java.io.Serializable
 import kotlin.math.roundToInt
 
@@ -12,6 +14,12 @@ data class Point(val x: Double, val y: Double): Serializable {
     constructor(pos: Pos): this(pos.x.toDouble(), pos.y.toDouble())
 
     fun roundToPos() = Pos(x.roundToInt(), y.roundToInt())
+}
+
+fun Input.readPoint() = Point(readDouble(), readDouble())
+fun Output.writePoint(p: Point) {
+    writeDouble(p.x)
+    writeDouble(p.y)
 }
 
 
@@ -40,6 +48,14 @@ fun Vector.horizontal() = Vector(x, 0.0)
 fun Vector.vertical() = Vector(0.0, y)
 
 fun Pos.toPoint() = Point(x.toDouble(), y.toDouble())
+fun Size.toVector() = Vector(width.toDouble(), height.toDouble())
+
+fun Input.readVector() = Vector(readDouble(), readDouble())
+
+fun Output.writeVector(v: Vector) {
+    writeDouble(v.x)
+    writeDouble(v.y)
+}
 
 
 operator fun Point.plus(delta: Vector) = Point(x + delta.x, y + delta.y)
@@ -48,3 +64,10 @@ operator fun Point.minus(delta: Vector) = Point(x - delta.x, y - delta.y)
 
 /** Rectangular. */
 data class Area(val topLeft: Point, val size: Vector): Serializable
+
+fun Input.readArea() = Area(readPoint(), readVector())
+
+fun Output.writeArea(a: Area) {
+    writePoint(a.topLeft)
+    writeVector(a.size)
+}

@@ -9,7 +9,7 @@ class Input internal constructor (private val stream: DataInputStream, val class
         val obj: T = T::class.java.getDeclaredConstructor().newInstance()
         obj.read(this)
 
-        return  obj
+        return obj
     }
 
     inline fun <reified T: Writable> readObject(): T {

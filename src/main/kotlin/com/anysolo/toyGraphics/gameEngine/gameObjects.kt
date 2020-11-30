@@ -1,15 +1,27 @@
 package com.anysolo.toyGraphics.gameEngine
 
 import com.anysolo.toyGraphics.*
+import com.anysolo.toyGraphics.dataEngine.ClassMeta
+import com.anysolo.toyGraphics.dataEngine.Input
+import com.anysolo.toyGraphics.dataEngine.Output
+import com.anysolo.toyGraphics.dataEngine.Writable
 import com.anysolo.toyGraphics.vector.*
 
 
-interface GameObject {
-    val point: Point
+interface GameObject: Writable {
+    var point: Point
     val screenArea: Area
+
+    override fun read(input: Input) {
+        point = input.readPoint()
+    }
+
+    override fun write(output: Output) {
+        output.writePoint(point)
+    }
 }
 
-abstract class StationaryObject(override val point: Point) : GameObject
+//abstract class StationaryObject(override val point: Point) : GameObject
 
 
 interface VisibleObject: GameObject {
@@ -17,12 +29,40 @@ interface VisibleObject: GameObject {
 }
 
 
-class VisibleImageObject(point: Point, val image: Image): VisibleObject, StationaryObject(point)  {
+@ClassMeta(hid = "ImageObject")
+abstract class ImageObject: VisibleObject {
+    override var point: Point = Point(0,0)
+
+    var imageFilename: String? = null
+        set(value) {
+            assert(value != null)
+
+            field = value
+            _image = ImageCache(value!!)
+        }
+
+    private var _image: Image? = null
+
     override val screenArea: Area
-        get() = Area(point, Vector(image.width, image.height))
+        get() {
+            if(_image == null)
+                return Area(Point(0, 0), Vector(0, 0))
+
+            return Area(point, _image!!.size.toVector())
+        }
+
+    override fun read(input: Input) {
+        imageFilename = input.readString()
+    }
+
+    override fun write(output: Output) {
+        output.writeString(imageFilename!!)
+    }
 
     override fun draw(gc: Graphics) {
-        gc.drawImage(point.roundToPos(), image)
+        _image ?. let {
+            gc.drawImage(point.roundToPos(), it)
+        }
     }
 }
 

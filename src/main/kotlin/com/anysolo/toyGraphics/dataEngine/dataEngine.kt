@@ -17,6 +17,8 @@ data class ClassData(val id: Int, val hid: String, val instanceFactory: Instance
 
 interface ClassCatalog {
     fun findClassByHid(hid: String): ClassData
+    fun hasHid(hid: String): Boolean
+
     fun findClassById(id: Int): ClassData
 }
 
@@ -24,8 +26,8 @@ interface ClassCatalog {
 class DataEngine(val packages: List<String>): ClassCatalog {
     val reflections = createReflections()
     val classData: List<ClassData> = createClassData()
-    val idToClassData = classData.associateBy { it.id }
-    val hidToClassData = classData.associateBy { it.hid }
+    private val idToClassData = classData.associateBy { it.id }
+    private val hidToClassData = classData.associateBy { it.hid }
 
     private fun collectAllClassUrls(): List<java.net.URL> {
         val urls = mutableListOf<java.net.URL>()
@@ -69,7 +71,13 @@ class DataEngine(val packages: List<String>): ClassCatalog {
     override fun findClassByHid(hid: String): ClassData =
         hidToClassData[hid] ?: throw RuntimeException("Cannot find class with hid: $hid")
 
+    override fun hasHid(hid: String): Boolean = hid in hidToClassData
 
     override fun findClassById(id: Int): ClassData =
         idToClassData[id] ?: throw RuntimeException("Cannot find class with id: $id")
+
+    fun createInstanceByHid(hid: String): Writable {
+        val classData = findClassByHid(hid)
+        return classData.instanceFactory()
+    }
 }

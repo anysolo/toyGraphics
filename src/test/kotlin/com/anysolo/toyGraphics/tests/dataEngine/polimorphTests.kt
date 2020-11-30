@@ -9,7 +9,7 @@ interface IScreenObject: Writable {
     var x: Int
     var y: Int
 
-    abstract fun textDump(): String
+    fun textDump(): String
 }
 
 
