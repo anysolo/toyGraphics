@@ -54,4 +54,4 @@ fun Graphics.drawOval(topLeft: Pos, size: Size, fill: Boolean = false) =
     drawOval(Rect(topLeft, size), fill)
 
 fun Graphics.drawText(p: Pos, text: String) =
-    drawText(p.x, p.x, text)
+    drawText(p.x, p.y, text)

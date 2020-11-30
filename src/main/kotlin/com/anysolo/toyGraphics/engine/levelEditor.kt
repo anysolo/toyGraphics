@@ -90,7 +90,7 @@ class LevelEditor(val background: Color) {
     private var messageString = ""
     private val statusLinePos = Pos(0, wnd.height-10)
 
-    private val inputLinePos = statusLinePos - Size(0, 10)
+    private val inputLinePos = statusLinePos - Size(0, 15)
 
     private val cursorColor = Pal16.white
     private val statusLineColor = Pal16.white
