@@ -78,7 +78,7 @@ class LevelDrawer(val level: GameLevel, val gc: Graphics) {
 }
 
 
-class LevelEditor(val dataEngine: DataEngine, val background: Color) {
+class LevelEditor(val dataEngine: DataEngine, val background: Color, val filename: String, val isNewFile: Boolean) {
     private var level: GameLevel = GameLevel()
     private val wnd = Window(1024, 768, background = background, buffered = true)
     private var cursorPos = Pos(wnd.width/2, wnd.height/2)
@@ -107,6 +107,9 @@ class LevelEditor(val dataEngine: DataEngine, val background: Color) {
     fun isModeRunning(): Boolean = mode?.isRunning() == true
 
     fun edit() {
+        if(!isNewFile)
+            load()
+
         while (true) {
             drawEverything()
             processEvents()
@@ -132,13 +135,13 @@ class LevelEditor(val dataEngine: DataEngine, val background: Color) {
         }
     }
 
-    fun load(filename: String) {
+    fun load() {
         dataEngine.openInput(filename).use { input ->
             level.read(input)
         }
     }
 
-    fun save(filename: String) {
+    fun save() {
         dataEngine.createOutput(filename).use { output ->
             output.writeValue(level)
         }
@@ -214,11 +217,11 @@ class LevelEditor(val dataEngine: DataEngine, val background: Color) {
                 }
 
                 'S' -> {
-                    save("level.dat")
+                    save()
                 }
 
                 'L' -> {
-                    load("level.dat")
+                    load()
                 }
             }
         }

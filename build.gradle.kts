@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import com.jfrog.bintray.gradle.BintrayExtension
 import org.jfrog.gradle.plugin.artifactory.dsl.ArtifactoryPluginConvention
 import org.jfrog.gradle.plugin.artifactory.dsl.PublisherConfig
-
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.dokka.gradle.DokkaTask
 
 import groovy.lang.GroovyObject
@@ -33,6 +33,7 @@ plugins {
     id("org.jetbrains.dokka") version "0.9.18"
     id("com.jfrog.bintray") version "1.8.4"
     id("com.jfrog.artifactory") version "4.9.5"
+    id("com.github.johnrengelman.shadow") version "5.1.0"
 }
 
 repositories {
@@ -186,4 +187,10 @@ artifactory {
             setProperty("publishPom", true)
         })
     })
+}
+
+tasks.withType<ShadowJar>() {
+    manifest {
+        attributes["Main-Class"] = "HelloKt"
+    }
 }
