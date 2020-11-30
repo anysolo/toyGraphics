@@ -1,6 +1,8 @@
 package com.anysolo.toyGraphics.tests.gameEngine.editor
 
+import com.anysolo.toyGraphics.Pal16
 import com.anysolo.toyGraphics.dataEngine.ClassMeta
+import com.anysolo.toyGraphics.gameEngine.GameLevel
 import com.anysolo.toyGraphics.gameEngine.ImageObject
 import com.anysolo.toyGraphics.gameEngine.runLevelEditor
 
@@ -12,5 +14,5 @@ class BrickH: ImageObject() {
 
 
 fun main(args: Array<String>) {
-    runLevelEditor(args)
+    runLevelEditor(args=args, gameLevel = GameLevel(), background = Pal16.black)
 }

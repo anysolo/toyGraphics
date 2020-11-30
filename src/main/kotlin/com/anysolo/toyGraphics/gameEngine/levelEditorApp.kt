@@ -1,5 +1,6 @@
 package com.anysolo.toyGraphics.gameEngine
 
+import com.anysolo.toyGraphics.Color
 import com.anysolo.toyGraphics.Pal16
 import com.anysolo.toyGraphics.dataEngine.DataEngine
 import java.io.File
@@ -17,7 +18,7 @@ private fun printHelp() {
 }
 
 
-fun runLevelEditor(args: Array<String>) {
+fun runLevelEditor(args: Array<String>, gameLevel: GameLevel, background: Color) {
     try {
         if (args.size != 3)
             throw CmdLineError("You must provide two arguments")
@@ -31,8 +32,13 @@ fun runLevelEditor(args: Array<String>) {
         val packagesFilename = args[2]
         val packages = File(packagesFilename).readLines()
 
-        val dataEngine = DataEngine(packages)
-        val levelEditor = LevelEditor(dataEngine, background = Pal16.black, levelFilename, cmd == "c")
+        val levelEditor = LevelEditor(
+            gameLevel = gameLevel,
+            gameObjectPackages = packages,
+            background = background,
+            filename = levelFilename,
+            isNewFile = cmd == "c"
+        )
 
         levelEditor.edit()
     } catch (e: CmdLineError) {

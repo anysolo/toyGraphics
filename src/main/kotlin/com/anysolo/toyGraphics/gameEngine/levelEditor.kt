@@ -78,8 +78,8 @@ class LevelDrawer(val level: GameLevel, val gc: Graphics) {
 }
 
 
-class LevelEditor(val dataEngine: DataEngine, val background: Color, val filename: String, val isNewFile: Boolean) {
-    private var level: GameLevel = GameLevel()
+class LevelEditor(val gameLevel: GameLevel, gameObjectPackages: List<String>, val background: Color, val filename: String, val isNewFile: Boolean) {
+    val dataEngine = DataEngine(gameObjectPackages)
     private val wnd = Window(1024, 768, background = background, buffered = true)
     private var cursorPos = Pos(wnd.width/2, wnd.height/2)
     private val cursorSize = Size(6, 6)
@@ -137,13 +137,13 @@ class LevelEditor(val dataEngine: DataEngine, val background: Color, val filenam
 
     fun load() {
         dataEngine.openInput(filename).use { input ->
-            level.read(input)
+            gameLevel.read(input)
         }
     }
 
     fun save() {
         dataEngine.createOutput(filename).use { output ->
-            output.writeValue(level)
+            output.writeValue(gameLevel)
         }
     }
 
@@ -153,7 +153,7 @@ class LevelEditor(val dataEngine: DataEngine, val background: Color, val filenam
 
         obj.point = cursorPos.toPoint()
 
-        level.addObject(obj)
+        gameLevel.addObject(obj)
 
         return obj
     }
@@ -162,7 +162,7 @@ class LevelEditor(val dataEngine: DataEngine, val background: Color, val filenam
         Graphics(wnd).use {gc ->
             gc.clear()
 
-            val levelDrawer = LevelDrawer(level, gc)
+            val levelDrawer = LevelDrawer(gameLevel, gc)
             levelDrawer.draw()
 
             drawCursor(gc)
