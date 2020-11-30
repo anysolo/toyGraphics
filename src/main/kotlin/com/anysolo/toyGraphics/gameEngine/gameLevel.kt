@@ -19,10 +19,15 @@ class GameLevel: Writable {
     }
 
     override fun read(input: Input) {
-        TODO("Not yet implemented")
+        val size = input.readInt()
+
+        repeat(size) {
+            _objects.add(input.readObject<GameObject>())
+        }
     }
 
     override fun write(output: Output) {
-        TODO("Not yet implemented")
+        output.writeInt(_objects.size)
+        _objects.forEach {output.writeObject(it)}
     }
 }

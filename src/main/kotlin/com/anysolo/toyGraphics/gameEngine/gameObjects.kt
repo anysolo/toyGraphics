@@ -52,10 +52,12 @@ abstract class ImageObject: VisibleObject {
         }
 
     override fun read(input: Input) {
+        super.read(input)
         imageFilename = input.readString()
     }
 
     override fun write(output: Output) {
+        super.write(output)
         output.writeString(imageFilename!!)
     }
 

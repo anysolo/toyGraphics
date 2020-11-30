@@ -133,7 +133,9 @@ class LevelEditor(val dataEngine: DataEngine, val background: Color) {
     }
 
     fun load(filename: String) {
-
+        dataEngine.openInput(filename).use { input ->
+            level.read(input)
+        }
     }
 
     fun save(filename: String) {
@@ -209,6 +211,14 @@ class LevelEditor(val dataEngine: DataEngine, val background: Color) {
                     } catch (e: EditorError) {
                         messageString = "error: ${e.error}"
                     }
+                }
+
+                'S' -> {
+                    save("level.dat")
+                }
+
+                'L' -> {
+                    load("level.dat")
                 }
             }
         }

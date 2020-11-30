@@ -23,10 +23,12 @@ data class MyClass1(var n1: Int = 0, var s1: String = ""): Writable {
 
 
 class NonPolymorphTests {
+    val dataFilename = "test.dat"
+    val dataEnginePackages = listOf("com.anysolo.toyGraphics")
+
     @Test
     fun `simple data class save and load`() {
-        val dataFilename = "test.dat"
-        val dataEngine = DataEngine(listOf("com.anysolo.toyGraphics"))
+        val dataEngine = DataEngine(dataEnginePackages)
 
         val o1 = MyClass1(7, "-7-")
 
