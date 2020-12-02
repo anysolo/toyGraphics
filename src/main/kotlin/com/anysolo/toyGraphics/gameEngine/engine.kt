@@ -75,8 +75,7 @@ class PlatformerEngine(windowSize: Size, backgroundColor: Color, val level: Game
 
     private fun updateObjects() {
         objects.filterIsInstance<DynamicObject>(). forEach {
-            if(it is DynamicObject)
-                it.update(this, virtualTime)
+            it.update(this, virtualTime)
         }
     }
 }
