@@ -5,12 +5,24 @@ import com.anysolo.toyGraphics.dataEngine.ClassMeta
 import com.anysolo.toyGraphics.dataEngine.Input
 import com.anysolo.toyGraphics.dataEngine.Output
 import com.anysolo.toyGraphics.dataEngine.Writable
+import com.anysolo.toyGraphics.events.Event
 import com.anysolo.toyGraphics.vector.*
 
 
 interface GameObject: Writable {
     var point: Point
     val screenArea: Area
+
+    fun zOrder() = 1
+
+    fun onStart(engineApi: Engine2GameObjectApi) {}
+    fun onEvent(event: Event) {}
+
+    fun subscribe(eventFilter: EventFilter, engineApi: Engine2GameObjectApi) =
+        engineApi.subscribe(eventFilter, this)
+
+    fun unsubscribe(engineApi: Engine2GameObjectApi) =
+        engineApi.unsubscribe(this)
 
     override fun read(input: Input) {
         point = input.readPoint()
@@ -26,6 +38,13 @@ interface GameObject: Writable {
 
 interface VisibleObject: GameObject {
     fun draw(gc: Graphics)
+}
+
+
+interface DynamicObject: GameObject {
+    var lastUpdateTime: Long
+
+    fun update(engineApi: Engine2GameObjectApi, time: Long)
 }
 
 
@@ -83,11 +102,6 @@ class VisibleAnimationObject(point: Point, val animation: Animation): VisibleObj
     }
 }
 
-interface DynamicObject: GameObject {
-    var lastUpdateTime: Long
-
-    fun update(time: Long)
-}
 
 
 interface MovingObject: DynamicObject {
