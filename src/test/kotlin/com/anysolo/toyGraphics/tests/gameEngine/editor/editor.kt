@@ -19,7 +19,7 @@ class BrickH: ImageObject() {
 class Bullet: AbstractArcadeMovingObject() {
     override fun onStart(engineApi: Engine2GameObjectApi) {
         super.onStart(engineApi)
-        speed = Vector(Random.nextDouble(50.0), Random.nextDouble(50.0))
+        speed = Vector(Random.nextDouble(-50.0, 50.0), Random.nextDouble(-50.0, 50.0))
     }
 
     override val size: Vector

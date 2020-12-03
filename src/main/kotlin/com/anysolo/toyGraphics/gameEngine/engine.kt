@@ -57,7 +57,7 @@ class PlatformerEngine(val window: Window, private val level: GameLevel): Engine
                 updateObjects()
                 drawFrame()
 
-                sleep(1)
+                Thread.yield()
             }
         } catch (e: ExitEx) {}
     }
