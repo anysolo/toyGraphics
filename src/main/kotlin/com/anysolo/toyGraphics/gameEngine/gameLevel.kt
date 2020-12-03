@@ -20,6 +20,7 @@ class GameLevel: Writable {
 
     override fun read(input: Input) {
         val size = input.readInt()
+        _objects.clear()
 
         repeat(size) {
             _objects.add(input.readObject<GameObject>())

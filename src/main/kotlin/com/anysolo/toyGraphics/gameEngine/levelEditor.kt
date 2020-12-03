@@ -14,7 +14,7 @@ class EditorError(val error: String): RuntimeException(error)
 
 interface EditorMode {
     fun draw(gc: Graphics)
-    fun processKeyboard(event: KeyboardEvent)
+    fun processKeyboard(event: KeyboardEvent): Boolean
     fun finish()
 
     fun isRunning(): Boolean
@@ -41,9 +41,11 @@ class StringEditorMode(val inputLinePos: Pos, val actionAfterStringInput: Action
         gc.drawText(inputLinePos, inputString)
     }
 
-    override fun processKeyboard(event: KeyboardEvent) {
+    override fun processKeyboard(event: KeyboardEvent): Boolean {
         if(!event.isPressed)
-            return
+            return false
+
+        var stopProcessing = false
 
         val ch = event.char
 
@@ -52,13 +54,18 @@ class StringEditorMode(val inputLinePos: Pos, val actionAfterStringInput: Action
 
             ch.isLetterOrDigit() || ch in "_-" -> {
                 inputString += ch
+                stopProcessing = true
             }
 
             event.code == KeyCodes.BACKSPACE -> {
-                if(!inputString.isEmpty())
+                if(!inputString.isEmpty()) {
                     inputString = inputString.dropLast(1)
+                    stopProcessing = true
+                }
             }
         }
+
+        return stopProcessing
     }
 
     override fun finish() {
@@ -196,10 +203,8 @@ class LevelEditor(val gameLevel: GameLevel, gameObjectPackages: List<String>, va
     }
 
     private fun processKeyboard(event: KeyboardEvent) {
-        println("Event: " + event)
-
-        if(isModeRunning())
-            mode?.processKeyboard(event)
+        if(isModeRunning() && mode?.processKeyboard(event) == true)
+            return
 
         if(!event.isPressed)
             return
@@ -222,6 +227,10 @@ class LevelEditor(val gameLevel: GameLevel, gameObjectPackages: List<String>, va
 
                 'L' -> {
                     load()
+                }
+
+                'P' -> {
+                    playTheLevel()
                 }
             }
         }
@@ -249,5 +258,11 @@ class LevelEditor(val gameLevel: GameLevel, gameObjectPackages: List<String>, va
                 }
             }
         }
+    }
+
+    fun playTheLevel() {
+        val gameEngine = PlatformerEngine(wnd, gameLevel)
+        gameEngine.run()
+        load()
     }
 }

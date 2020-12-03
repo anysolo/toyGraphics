@@ -1,7 +1,6 @@
 package com.anysolo.toyGraphics.gameEngine
 
 import com.anysolo.toyGraphics.*
-import com.anysolo.toyGraphics.dataEngine.ClassMeta
 import com.anysolo.toyGraphics.dataEngine.Input
 import com.anysolo.toyGraphics.dataEngine.Output
 import com.anysolo.toyGraphics.dataEngine.Writable
@@ -11,7 +10,10 @@ import com.anysolo.toyGraphics.vector.*
 
 interface GameObject: Writable {
     var point: Point
+    val size: Vector
+
     val screenArea: Area
+        get() = Area(point, size)
 
     fun zOrder() = 1
 
@@ -42,16 +44,37 @@ interface VisibleObject: GameObject {
 
 
 interface DynamicObject: GameObject {
-    var lastUpdateTime: Long
-
     fun update(engineApi: Engine2GameObjectApi, time: Long)
 }
 
 
-@ClassMeta(hid = "ImageObject")
-abstract class ImageObject: VisibleObject {
-    override var point: Point = Point(0,0)
+interface ArcadeMovingObject: DynamicObject, VisibleObject {
+    var speed: Vector
+}
 
+
+abstract class AbstractVisibleObject: VisibleObject {
+    override var point: Point = Point(0,0)
+}
+
+
+abstract class AbstractArcadeMovingObject: ArcadeMovingObject {
+    override var speed: Vector = Vector(0, 0)
+    override var point: Point = Point(0,0)
+    var lastUpdateTimeMs = 0L
+
+    override fun update(engineApi: Engine2GameObjectApi, time: Long) {
+        if(lastUpdateTimeMs != 0L) {
+            val deltaTime = (time - lastUpdateTimeMs) / 1000.0
+            point += speed * deltaTime
+        }
+
+        lastUpdateTimeMs = time
+    }
+}
+
+
+abstract class ImageObject: AbstractVisibleObject (){
     var imageFilename: String? = null
         set(value) {
             assert(value != null)
@@ -62,13 +85,8 @@ abstract class ImageObject: VisibleObject {
 
     private var _image: Image? = null
 
-    override val screenArea: Area
-        get() {
-            if(_image == null)
-                return Area(Point(0, 0), Vector(0, 0))
-
-            return Area(point, _image!!.size.toVector())
-        }
+    override val size: Vector
+        get() = if(_image == null) Vector(0, 0) else _image!!.size.toVector()
 
     override fun read(input: Input) {
         super.read(input)
