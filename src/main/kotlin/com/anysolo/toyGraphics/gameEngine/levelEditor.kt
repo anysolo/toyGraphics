@@ -91,19 +91,11 @@ class LevelDrawer(val level: GameLevel, val gc: Graphics) {
 
 
 data class EditorConfig(val gameObjectsPackages: List<String>) {
-    //
-    /*
-    "gameObjectsPackages":
-  - "com.anysolo.toyGraphics.tests.gameEngine.editor"
-
-     */
-
     companion object {
         fun load(filename: String): EditorConfig = ConfigLoader.Builder().
             addSource(ConfigFilePropertySource(ConfigSource.FileSource(File(filename))))
             .build()
             .loadConfigOrThrow()
-
     }
 }
 
