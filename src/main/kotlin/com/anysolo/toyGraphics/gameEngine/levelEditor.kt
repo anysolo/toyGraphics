@@ -1,9 +1,14 @@
 package com.anysolo.toyGraphics.gameEngine
 
 import com.anysolo.toyGraphics.*
+import com.anysolo.toyGraphics.Pos
 import com.anysolo.toyGraphics.dataEngine.DataEngine
 import com.anysolo.toyGraphics.events.*
 import com.anysolo.toyGraphics.vector.*
+import com.sksamuel.hoplite.*
+import com.sksamuel.hoplite.PropertySource.Companion.file
+import com.sksamuel.hoplite.yaml.*
+import java.io.File
 
 
 typealias ActionAfterStringInput = (str: String) -> Unit
@@ -85,8 +90,26 @@ class LevelDrawer(val level: GameLevel, val gc: Graphics) {
 }
 
 
-class LevelEditor(val gameLevel: GameLevel, gameObjectPackages: List<String>, val background: Color, val filename: String, val isNewFile: Boolean) {
-    val dataEngine = DataEngine(gameObjectPackages)
+data class EditorConfig(val gameObjectsPackages: List<String>) {
+    //
+    /*
+    "gameObjectsPackages":
+  - "com.anysolo.toyGraphics.tests.gameEngine.editor"
+
+     */
+
+    companion object {
+        fun load(filename: String): EditorConfig = ConfigLoader.Builder().
+            addSource(ConfigFilePropertySource(ConfigSource.FileSource(File(filename))))
+            .build()
+            .loadConfigOrThrow()
+
+    }
+}
+
+
+class LevelEditor(val gameLevel: GameLevel, val config: EditorConfig, val background: Color, val filename: String, val isNewFile: Boolean) {
+    val dataEngine = DataEngine(config.gameObjectsPackages)
     private val wnd = Window(1024, 768, background = background, buffered = true)
     private var cursorPos = Pos(wnd.width/2, wnd.height/2)
     private val cursorSize = Size(6, 6)
@@ -142,13 +165,13 @@ class LevelEditor(val gameLevel: GameLevel, gameObjectPackages: List<String>, va
         }
     }
 
-    fun load() {
+    private fun load() {
         dataEngine.openInput(filename).use { input ->
             gameLevel.read(input)
         }
     }
 
-    fun save() {
+    private fun save() {
         dataEngine.createOutput(filename).use { output ->
             output.writeValue(gameLevel)
         }

@@ -68,6 +68,7 @@ dependencies {
     compile(kotlin("reflect"))
     testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
     implementation("org.reflections:reflections:0.9.12")
+    implementation("com.sksamuel.hoplite:hoplite-yaml:1.3.10")
 
     samples(kotlin("stdlib"))
     samples(kotlin("reflect"))

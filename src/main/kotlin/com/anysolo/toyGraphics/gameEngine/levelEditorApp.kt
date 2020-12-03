@@ -1,14 +1,14 @@
 package com.anysolo.toyGraphics.gameEngine
 
 import com.anysolo.toyGraphics.Color
-import java.io.File
+import com.sksamuel.hoplite.ConfigLoader
 
 
 private class CmdLineError(val error: String): RuntimeException(error)
 
 
 private fun printHelp() {
-    println("Usage: <command> <level-filename> <gameObjectPackages-filename>")
+    println("Usage: <command> <level-filename> <config-filename>")
     println("Where:")
     println("  command: 'e' - for edit existing level or 'c' filename - to create a new level")
     println("  <level-filename> - the file containing game level")
@@ -27,12 +27,11 @@ fun runLevelEditor(args: Array<String>, gameLevel: GameLevel, background: Color)
             throw CmdLineError("Unknown command: $cmd")
 
         val levelFilename = args[1]
-        val packagesFilename = args[2]
-        val packages = File(packagesFilename).readLines()
+        val configFilename = args[2]
 
         val levelEditor = LevelEditor(
             gameLevel = gameLevel,
-            gameObjectPackages = packages,
+            config = EditorConfig.load(configFilename),
             background = background,
             filename = levelFilename,
             isNewFile = cmd == "c"
