@@ -4,6 +4,7 @@ import com.anysolo.toyGraphics.*
 import com.anysolo.toyGraphics.events.Event
 import com.anysolo.toyGraphics.events.EventManager
 import com.anysolo.toyGraphics.events.KeyboardEvent
+import com.anysolo.toyGraphics.vector.Area
 import java.time.Instant
 import java.util.*
 
@@ -16,8 +17,9 @@ typealias EventFilter = (e: Event) -> Boolean
 
 
 interface Engine2GameObjectApi {
-    fun subscribe(eventFilter: EventFilter, receiver: GameObject)
-    fun unsubscribe(gameObject: GameObject)
+    fun subscribe(eventFilter: EventFilter)
+    fun unsubscribe()
+    fun destroy()
 }
 
 
@@ -27,28 +29,37 @@ data class EventSubscription(val filter: EventFilter, val receiver: GameObject)
 class ExitEx: RuntimeException()
 
 
-class PlatformerEngine(val window: Window, private val level: GameLevel): Engine2LevelApi, Engine2GameObjectApi {
+class PlatformerEngine(val window: Window, private val level: GameLevel): Engine2LevelApi {
+    inner class Engine2GameObjectApiImpl(val gameObject: GameObject): Engine2GameObjectApi {
+        override fun subscribe(eventFilter: EventFilter) {
+            eventSubscriptions[gameObject] = EventSubscription(eventFilter, gameObject)
+        }
+
+        override fun unsubscribe() {
+            eventSubscriptions.remove(gameObject)
+        }
+
+        override fun destroy() {
+            removeObj(gameObject)
+        }
+    }
+
+
     private val eventManager = EventManager(window)
     private val eventSubscriptions = mutableMapOf<GameObject, EventSubscription>()
     private val objects = PriorityQueue<GameObject>()
         { o1: GameObject, o2: GameObject -> o1.zOrder().compareTo(o2.zOrder()) }
+
+    private val collisionDetector: CollisionDetector = ListCollisionDetector()
 
     private var virtualTime = 0L
     private var frameCounter = 0
     private var lastFrameCounterStartTime = 0L
     private var fps = 0
 
-    override fun subscribe(eventFilter: EventFilter, receiver: GameObject) {
-        eventSubscriptions[receiver] = EventSubscription(eventFilter, receiver)
-    }
-
-    override fun unsubscribe(gameObject: GameObject) {
-        eventSubscriptions.remove(gameObject)
-    }
-
     fun run() {
         loadFromLevel()
-        objects.forEach {it.onStart(this)}
+        objects.forEach {it.onStart(Engine2GameObjectApiImpl(it))}
 
         try {
             while (true) {
@@ -82,6 +93,12 @@ class PlatformerEngine(val window: Window, private val level: GameLevel): Engine
 
     private fun addObject(obj: GameObject) {
         objects.add(obj)
+        collisionDetector.addObject(obj)
+    }
+
+    private fun removeObj(obj: GameObject) {
+        collisionDetector.removeObject(obj)
+        objects.remove(obj)
     }
 
     private fun pumpEvent() {
@@ -113,12 +130,12 @@ class PlatformerEngine(val window: Window, private val level: GameLevel): Engine
         Graphics(window).use { gc ->
             gc.clear()
 
-            drawFps(gc)
-
             objects.forEach {
                 if(it is VisibleObject)
                     it.draw(gc)
             }
+
+            drawFps(gc)
         }
     }
 
@@ -128,9 +145,17 @@ class PlatformerEngine(val window: Window, private val level: GameLevel): Engine
     }
 
     private fun updateObjects() {
-        objects.forEach {
-            if(it is DynamicObject)
-                it.update(this, virtualTime)
+        objects.forEach { gobj ->
+            if(gobj is DynamicObject) {
+                val savedPos = gobj.point
+
+                gobj.update(Engine2GameObjectApiImpl(gobj), virtualTime)
+                val overlapingObjects = collisionDetector.findObjects(gobj.screenArea).filter { it != gobj }
+                if(overlapingObjects.isNotEmpty()) {
+                    gobj.point = savedPos
+                } else
+                    collisionDetector.update(gobj)
+            }
         }
     }
 }

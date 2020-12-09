@@ -21,10 +21,10 @@ interface GameObject: Writable {
     fun onEvent(event: Event) {}
 
     fun subscribe(eventFilter: EventFilter, engineApi: Engine2GameObjectApi) =
-        engineApi.subscribe(eventFilter, this)
+        engineApi.subscribe(eventFilter)
 
     fun unsubscribe(engineApi: Engine2GameObjectApi) =
-        engineApi.unsubscribe(this)
+        engineApi.unsubscribe()
 
     override fun read(input: Input) {
         point = input.readPoint()
