@@ -17,9 +17,13 @@ class BrickH: ImageObject() {
 
 @ClassMeta(hid = "bullet")
 class Bullet: AbstractArcadeMovingObject() {
+    companion object {
+        val maxSpeed = 100.0
+    }
+
     override fun onStart(engineApi: Engine2GameObjectApi) {
         super.onStart(engineApi)
-        speed = Vector(Random.nextDouble(-50.0, 50.0), Random.nextDouble(-50.0, 50.0))
+        speed = Vector(Random.nextDouble(-maxSpeed, maxSpeed), Random.nextDouble(-maxSpeed, maxSpeed))
     }
 
     override val size: Vector

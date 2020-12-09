@@ -65,6 +65,7 @@ operator fun Point.minus(delta: Vector) = Point(x - delta.x, y - delta.y)
 /** Rectangular. */
 data class Area(val topLeft: Point, val size: Vector): Serializable
 
+
 infix fun Area.overlaps(a2: Area): Boolean {
     if(topLeft.x >= a2.topLeft.x + a2.size.x || topLeft.x + size.x <= a2.topLeft.x)
         return false

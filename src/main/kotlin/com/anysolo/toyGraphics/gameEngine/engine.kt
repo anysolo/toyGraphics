@@ -4,7 +4,7 @@ import com.anysolo.toyGraphics.*
 import com.anysolo.toyGraphics.events.Event
 import com.anysolo.toyGraphics.events.EventManager
 import com.anysolo.toyGraphics.events.KeyboardEvent
-import com.anysolo.toyGraphics.vector.Area
+import com.anysolo.toyGraphics.vector.Vector
 import java.time.Instant
 import java.util.*
 
@@ -150,9 +150,18 @@ class PlatformerEngine(val window: Window, private val level: GameLevel): Engine
                 val savedPos = gobj.point
 
                 gobj.update(Engine2GameObjectApiImpl(gobj), virtualTime)
-                val overlapingObjects = collisionDetector.findObjects(gobj.screenArea).filter { it != gobj }
-                if(overlapingObjects.isNotEmpty()) {
+                val collisionData = collisionDetector.gatherCollisionData(gobj)
+
+                if(collisionData != null) {
                     gobj.point = savedPos
+
+                    if(gobj is ArcadeMovingObject) {
+                        if (collisionData.isHorizontal)
+                            gobj.speed = Vector(-gobj.speed.x, gobj.speed.y)
+
+                        if (collisionData.isVertical)
+                            gobj.speed = Vector(gobj.speed.x, -gobj.speed.y)
+                    }
                 } else
                     collisionDetector.update(gobj)
             }
